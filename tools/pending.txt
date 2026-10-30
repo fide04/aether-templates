@@ -1,0 +1,34 @@
+# Known problems waiting for a fix: "<template> <check>" (see tools/validate.py).
+# Remove a line in the same change that fixes it.
+
+# third-party image steamcmd/steamcmd: move to ghcr.io/aether-panel/steamcmd
+7days2die image
+ark image
+arma3 image
+barotrauma image
+csgo image
+css image
+cstrike image
+eco9 image
+gmod image
+insurgencysandstorm image
+killingfloor2 image
+mordhau image
+necesse image
+palworld image
+rust image
+satisfactory image
+squad image
+starbound image
+stn image
+unturned image
+valheim image
+zomboid image
+
+# default port 8080 is the panel's
+java port
+killingfloor2 port
+
+# host only: no Docker environment, so Docker installs cannot use them
+dontstarvetogether environments
+eco environments

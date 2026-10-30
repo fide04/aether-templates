@@ -28,3 +28,13 @@ Type must be lowercase
 Display must include if the environment is docker via (Docker)
 File is spaced using 2 spaces
 Type of operations must be the first line in the object
+
+# Checks
+
+Every pull request runs `tools/validate.py` (see `.github/workflows/validate.yml`). It fails when
+`templates.json` and the folders do not match, a template breaks `spec.json`, a template uses a
+third-party Docker image (use `ghcr.io/aether-panel/*` or the official image), or a default port is
+one the panel uses (8080, 8081, 5657, 3307). Known problems waiting for a fix are listed in
+`tools/pending.txt`; remove the line in the change that fixes it.
+
+Run it locally with `pip install jsonschema && python3 tools/validate.py`.
