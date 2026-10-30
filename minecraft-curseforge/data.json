@@ -1,0 +1,53 @@
+[
+  {
+    "name": "minecraft-curseforge-876781",
+    "variables": {
+      "memory": "4096",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "javaversion": "17",
+      "projectId": "876781",
+      "fileId": "0"
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "minecraft-curseforge-829758",
+    "variables": {
+      "memory": "4096",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "javaversion": "17",
+      "projectId": "829758",
+      "fileId": "0"
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "minecraft-curseforge-466901",
+    "variables": {
+      "memory": "4096",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "javaversion": "17",
+      "projectId": "466901",
+      "fileId": "5181988"
+    },
+    "environment": {
+      "type": "host"
+    }
+  }
+]

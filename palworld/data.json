@@ -1,0 +1,40 @@
+[
+  {
+    "name": "palworld",
+    "variables": {
+      "cpu": 400,
+      "disk": 20480,
+      "memory": 16384,
+      "ip": "0.0.0.0",
+      "port": 8211,
+      "queryport": 27015,
+      "servername": "Palworld Server",
+      "serverpassword": "",
+      "adminpassword": "changeme",
+      "maxplayers": 32,
+      "publiclobby": false
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "palworld-docker",
+    "variables": {
+      "cpu": 400,
+      "disk": 20480,
+      "memory": 16384,
+      "ip": "0.0.0.0",
+      "port": 8211,
+      "queryport": 27015,
+      "servername": "Palworld Server",
+      "serverpassword": "",
+      "adminpassword": "changeme",
+      "maxplayers": 32,
+      "publiclobby": false
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]

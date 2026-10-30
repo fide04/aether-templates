@@ -1,0 +1,50 @@
+[
+  {
+    "name": "armareforger",
+    "variables": {
+      "cpu": 400,
+      "disk": 30720,
+      "memory": 8192,
+      "ip": "0.0.0.0",
+      "port": 2001,
+      "queryport": 17777,
+      "rconport": 19999,
+      "publicaddress": "",
+      "servername": "Arma Reforger Server",
+      "serverpassword": "",
+      "adminpassword": "changeme",
+      "rconpassword": "changeme",
+      "maxplayers": 64,
+      "scenarioid": "{ECC61978EDCC2B5A}Missions/23_Campaign.conf",
+      "visible": true,
+      "maxfps": 60
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "armareforger-docker",
+    "variables": {
+      "cpu": 400,
+      "disk": 30720,
+      "memory": 8192,
+      "ip": "0.0.0.0",
+      "port": 2001,
+      "queryport": 17777,
+      "rconport": 19999,
+      "publicaddress": "",
+      "servername": "Arma Reforger Server",
+      "serverpassword": "",
+      "adminpassword": "changeme",
+      "rconpassword": "changeme",
+      "maxplayers": 64,
+      "scenarioid": "{ECC61978EDCC2B5A}Missions/23_Campaign.conf",
+      "visible": true,
+      "maxfps": 60
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]

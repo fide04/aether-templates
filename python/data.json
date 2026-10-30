@@ -1,0 +1,40 @@
+[
+  {
+    "name": "python",
+    "variables": {
+      "cpu": 100,
+      "disk": 10240,
+      "memory": 1024,
+      "ip": "0.0.0.0",
+      "port": 8000,
+      "pyversion": "3.13",
+      "gitrepo": "",
+      "gitbranch": "",
+      "gittoken": "",
+      "startfile": "main.py",
+      "installonstart": true
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "python-docker",
+    "variables": {
+      "cpu": 100,
+      "disk": 10240,
+      "memory": 1024,
+      "ip": "0.0.0.0",
+      "port": 8000,
+      "pyversion": "3.13",
+      "gitrepo": "",
+      "gitbranch": "",
+      "gittoken": "",
+      "startfile": "main.py",
+      "installonstart": true
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]

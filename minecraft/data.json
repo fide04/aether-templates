@@ -1,0 +1,295 @@
+[
+  {
+    "name": "minecraft-vanilla",
+    "variables": {
+      "memory": "2048",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "version": "latest",
+      "motd": "None",
+      "javaversion": "21",
+      "modlauncher": ""
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "minecraft-fabric",
+    "variables": {
+      "memory": "2048",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "version": "1.20.1",
+      "motd": "None",
+      "javaversion": "21",
+      "modlauncher": "fabric"
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "minecraft-minecraftforge",
+    "variables": {
+      "memory": "4096",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "version": "1.21.4",
+      "motd": "None",
+      "javaversion": "21",
+      "modlauncher": "forge"
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "minecraft-paper",
+    "variables": {
+      "memory": "2048",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "version": "1.21.4",
+      "motd": "None",
+      "javaversion": "21",
+      "modlauncher": "paper",
+      "paperbuild": "203"
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "minecraft-spigot",
+    "variables": {
+      "memory": "2048",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "version": "1.21.5",
+      "motd": "None",
+      "javaversion": "21",
+      "modlauncher": "spigot"
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "minecraft-paper",
+    "variables": {
+      "memory": "2048",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "version": "1.21.4",
+      "motd": "None",
+      "javaversion": "21",
+      "modlauncher": "paper",
+      "paperbuild": "232"
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "minecraft-vanilla-docker",
+    "variables": {
+      "memory": "2048",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "version": "latest",
+      "motd": "None",
+      "javaversion": "21",
+      "modlauncher": ""
+    },
+    "environment": {
+      "type": "docker"
+    }
+  },
+  {
+    "name": "minecraft-fabric-docker",
+    "variables": {
+      "memory": "2048",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "version": "1.20.1",
+      "motd": "None",
+      "javaversion": "21",
+      "modlauncher": "fabric"
+    },
+    "environment": {
+      "type": "docker"
+    }
+  },
+  {
+    "name": "minecraft-minecraftforge-docker",
+    "variables": {
+      "memory": "4096",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "version": "1.21.4",
+      "motd": "None",
+      "javaversion": "21",
+      "modlauncher": "forge",
+      "forgebuild": "1.21.4-54.1.1"
+    },
+    "environment": {
+      "type": "docker"
+    }
+  },
+  {
+    "name": "minecraft-paper-docker",
+    "variables": {
+      "memory": "2048",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "version": "1.21.4",
+      "motd": "None",
+      "javaversion": "21",
+      "modlauncher": "paper",
+      "paperbuild": "203"
+    },
+    "environment": {
+      "type": "docker"
+    }
+  },
+  {
+    "name": "minecraft-spigot-docker",
+    "variables": {
+      "memory": "2048",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "version": "1.21.5",
+      "motd": "None",
+      "javaversion": "21",
+      "modlauncher": "spigot"
+    },
+    "environment": {
+      "type": "docker"
+    }
+  },
+  {
+    "name": "minecraft-paper-docker",
+    "variables": {
+      "memory": "2048",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "version": "1.21.4",
+      "motd": "None",
+      "javaversion": "21",
+      "modlauncher": "paper",
+      "paperbuild": "232"
+    },
+    "environment": {
+      "type": "docker"
+    }
+  },
+  {
+    "name": "minecraft-neoforge",
+    "variables": {
+      "memory": "2048",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "version": "1.21.4",
+      "motd": "None",
+      "javaversion": "21",
+      "modlauncher": "neoforge"
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "minecraft-purpur",
+    "variables": {
+      "memory": "2048",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "version": "1.21.4",
+      "motd": "None",
+      "javaversion": "21",
+      "modlauncher": "purpur"
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "minecraft-neoforge-docker",
+    "variables": {
+      "memory": "2048",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "version": "1.21.4",
+      "motd": "None",
+      "javaversion": "21",
+      "modlauncher": "neoforge"
+    },
+    "environment": {
+      "type": "docker"
+    }
+  },
+  {
+    "name": "minecraft-purpur-docker",
+    "variables": {
+      "memory": "2048",
+      "cpu": "100",
+      "disk": "10240",
+      "ip": "0.0.0.0",
+      "port": "25565",
+      "eula": true,
+      "version": "1.21.4",
+      "motd": "None",
+      "javaversion": "21",
+      "modlauncher": "purpur"
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]

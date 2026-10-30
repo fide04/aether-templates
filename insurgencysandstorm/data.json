@@ -1,0 +1,46 @@
+[
+  {
+    "name": "insurgencysandstorm",
+    "variables": {
+      "cpu": 200,
+      "disk": 30720,
+      "memory": 4096,
+      "ip": "0.0.0.0",
+      "port": 27102,
+      "queryport": 27131,
+      "rconport": 27015,
+      "servername": "Insurgency Sandstorm Server",
+      "serverpassword": "",
+      "maxplayers": 28,
+      "map": "Oilfield",
+      "scenario": "Scenario_Refinery_Push_Security",
+      "rconpassword": "",
+      "gslt": ""
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "insurgencysandstorm-docker",
+    "variables": {
+      "cpu": 200,
+      "disk": 30720,
+      "memory": 4096,
+      "ip": "0.0.0.0",
+      "port": 27102,
+      "queryport": 27131,
+      "rconport": 27015,
+      "servername": "Insurgency Sandstorm Server",
+      "serverpassword": "",
+      "maxplayers": 28,
+      "map": "Oilfield",
+      "scenario": "Scenario_Refinery_Push_Security",
+      "rconpassword": "",
+      "gslt": ""
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]

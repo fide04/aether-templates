@@ -1,0 +1,44 @@
+[
+  {
+    "name": "corekeeper",
+    "variables": {
+      "cpu": 200,
+      "disk": 4096,
+      "memory": 4096,
+      "ip": "0.0.0.0",
+      "port": 27015,
+      "directconnect": true,
+      "worldname": "Core Keeper Server",
+      "serverpassword": "",
+      "maxplayers": 8,
+      "worldindex": 0,
+      "worldseed": 0,
+      "worldmode": 0,
+      "gameid": ""
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "corekeeper-docker",
+    "variables": {
+      "cpu": 200,
+      "disk": 4096,
+      "memory": 4096,
+      "ip": "0.0.0.0",
+      "port": 27015,
+      "directconnect": true,
+      "worldname": "Core Keeper Server",
+      "serverpassword": "",
+      "maxplayers": 8,
+      "worldindex": 0,
+      "worldseed": 0,
+      "worldmode": 0,
+      "gameid": ""
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]

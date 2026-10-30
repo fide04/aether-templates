@@ -1,0 +1,38 @@
+[
+  {
+    "name": "hytale",
+    "variables": {
+      "cpu": 400,
+      "disk": 10240,
+      "memory": 6144,
+      "ip": "0.0.0.0",
+      "port": 5520,
+      "servername": "Hytale Server",
+      "serverpassword": "",
+      "maxplayers": 100,
+      "patchline": "release",
+      "aotcache": true
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "hytale-docker",
+    "variables": {
+      "cpu": 400,
+      "disk": 10240,
+      "memory": 6144,
+      "ip": "0.0.0.0",
+      "port": 5520,
+      "servername": "Hytale Server",
+      "serverpassword": "",
+      "maxplayers": 100,
+      "patchline": "release",
+      "aotcache": true
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]

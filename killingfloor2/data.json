@@ -1,0 +1,48 @@
+[
+  {
+    "name": "killingfloor2",
+    "variables": {
+      "cpu": 200,
+      "disk": 40960,
+      "memory": 4096,
+      "ip": "0.0.0.0",
+      "port": 7777,
+      "queryport": 27015,
+      "webadminport": 8080,
+      "servername": "Killing Floor 2 Server",
+      "serverpassword": "",
+      "adminpassword": "changeme",
+      "webadmin": false,
+      "gamemode": "KFGameContent.KFGameInfo_Survival",
+      "difficulty": 0,
+      "maxplayers": 6,
+      "map": "KF-BioticsLab"
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "killingfloor2-docker",
+    "variables": {
+      "cpu": 200,
+      "disk": 40960,
+      "memory": 4096,
+      "ip": "0.0.0.0",
+      "port": 7777,
+      "queryport": 27015,
+      "webadminport": 8080,
+      "servername": "Killing Floor 2 Server",
+      "serverpassword": "",
+      "adminpassword": "changeme",
+      "webadmin": false,
+      "gamemode": "KFGameContent.KFGameInfo_Survival",
+      "difficulty": 0,
+      "maxplayers": 6,
+      "map": "KF-BioticsLab"
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]

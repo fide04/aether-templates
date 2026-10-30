@@ -1,0 +1,25 @@
+[
+  {
+    "name": "rust",
+    "variables": {
+      "RConPassword": "12345"
+    },
+    "environment": {
+      "type": "host"
+    },
+    "runtimeRequirement": 10,
+    "ignoreExitCode": true
+  },
+  {
+    "name": "rust-docker",
+    "variables": {
+      "RConPassword": "12345"
+    },
+    "environment": {
+      "type": "docker",
+      "image": "steamcmd/steamcmd"
+    },
+    "runtimeRequirement": 10,
+    "ignoreExitCode": true
+  }
+]

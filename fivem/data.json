@@ -1,0 +1,56 @@
+[
+  {
+    "name": "fivem-txadmin",
+    "variables": {
+      "cpu": 200,
+      "disk": 20480,
+      "memory": 4096,
+      "ip": "0.0.0.0",
+      "port": 30120,
+      "txadminport": 40120,
+      "licensekey": "",
+      "hostname": "Aether FiveM Server",
+      "maxclients": 48,
+      "txadmin": true
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "fivem-plain",
+    "variables": {
+      "cpu": 200,
+      "disk": 20480,
+      "memory": 4096,
+      "ip": "0.0.0.0",
+      "port": 30120,
+      "txadminport": 40120,
+      "licensekey": "",
+      "hostname": "Aether FiveM Server",
+      "maxclients": 48,
+      "txadmin": false
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "fivem-txadmin-docker",
+    "variables": {
+      "cpu": 200,
+      "disk": 20480,
+      "memory": 4096,
+      "ip": "0.0.0.0",
+      "port": 30120,
+      "txadminport": 40120,
+      "licensekey": "",
+      "hostname": "Aether FiveM Server",
+      "maxclients": 48,
+      "txadmin": true
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "name": "lavalink",
+    "variables": {
+      "cpu": 100,
+      "disk": 4096,
+      "memory": 1024,
+      "ip": "0.0.0.0",
+      "port": 2333,
+      "password": "changeme",
+      "javaversion": "21"
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "lavalink-docker",
+    "variables": {
+      "cpu": 100,
+      "disk": 4096,
+      "memory": 1024,
+      "ip": "0.0.0.0",
+      "port": 2333,
+      "password": "changeme",
+      "javaversion": "21"
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]

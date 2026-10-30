@@ -1,0 +1,44 @@
+[
+  {
+    "name": "nodejs",
+    "variables": {
+      "cpu": 100,
+      "disk": 10240,
+      "memory": 1024,
+      "ip": "0.0.0.0",
+      "port": 3000,
+      "nodeversion": "24",
+      "gitrepo": "",
+      "gitbranch": "",
+      "gittoken": "",
+      "startfile": "index.js",
+      "npmstart": false,
+      "installonstart": true,
+      "nodeenv": "production"
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "nodejs-docker",
+    "variables": {
+      "cpu": 100,
+      "disk": 10240,
+      "memory": 1024,
+      "ip": "0.0.0.0",
+      "port": 3000,
+      "nodeversion": "24",
+      "gitrepo": "",
+      "gitbranch": "",
+      "gittoken": "",
+      "startfile": "index.js",
+      "npmstart": false,
+      "installonstart": true,
+      "nodeenv": "production"
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]

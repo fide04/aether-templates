@@ -1,0 +1,36 @@
+[
+  {
+    "name": "java",
+    "variables": {
+      "cpu": 100,
+      "disk": 10240,
+      "memory": 1024,
+      "ip": "0.0.0.0",
+      "port": 8080,
+      "javaversion": "21",
+      "jarfile": "app.jar",
+      "jvmflags": "",
+      "jarurl": ""
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "java-docker",
+    "variables": {
+      "cpu": 100,
+      "disk": 10240,
+      "memory": 1024,
+      "ip": "0.0.0.0",
+      "port": 8080,
+      "javaversion": "21",
+      "jarfile": "app.jar",
+      "jvmflags": "",
+      "jarurl": ""
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]

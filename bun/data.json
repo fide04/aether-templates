@@ -1,0 +1,42 @@
+[
+  {
+    "name": "bun",
+    "variables": {
+      "cpu": 100,
+      "disk": 10240,
+      "memory": 1024,
+      "ip": "0.0.0.0",
+      "port": 3000,
+      "bunversion": "1",
+      "gitrepo": "",
+      "gitbranch": "",
+      "gittoken": "",
+      "startfile": "index.ts",
+      "bunstart": false,
+      "installonstart": true
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "bun-docker",
+    "variables": {
+      "cpu": 100,
+      "disk": 10240,
+      "memory": 1024,
+      "ip": "0.0.0.0",
+      "port": 3000,
+      "bunversion": "1",
+      "gitrepo": "",
+      "gitbranch": "",
+      "gittoken": "",
+      "startfile": "index.ts",
+      "bunstart": false,
+      "installonstart": true
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]

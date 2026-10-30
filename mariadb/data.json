@@ -1,0 +1,21 @@
+[
+  {
+    "name": "mariadb-docker",
+    "variables": {
+      "cpu": 100,
+      "disk": 10240,
+      "memory": 1024,
+      "ip": "0.0.0.0",
+      "port": 3306,
+      "version": "11.8",
+      "rootpassword": "changeme",
+      "database": "app",
+      "dbuser": "app",
+      "dbpassword": "changeme",
+      "extraargs": ""
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]

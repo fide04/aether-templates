@@ -1,0 +1,36 @@
+[
+  {
+    "name": "necesse",
+    "variables": {
+      "cpu": 100,
+      "disk": 4096,
+      "memory": 2048,
+      "ip": "0.0.0.0",
+      "port": 14159,
+      "worldname": "MyWorld",
+      "serverpassword": "",
+      "maxplayers": 10,
+      "motd": "Welcome!"
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "necesse-docker",
+    "variables": {
+      "cpu": 100,
+      "disk": 4096,
+      "memory": 2048,
+      "ip": "0.0.0.0",
+      "port": 14159,
+      "worldname": "MyWorld",
+      "serverpassword": "",
+      "maxplayers": 10,
+      "motd": "Welcome!"
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]

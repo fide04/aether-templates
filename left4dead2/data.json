@@ -1,0 +1,40 @@
+[
+  {
+    "name": "left4dead2",
+    "variables": {
+      "cpu": 100,
+      "disk": 20480,
+      "memory": 2048,
+      "ip": "0.0.0.0",
+      "port": 27015,
+      "clientport": 27005,
+      "servername": "Left 4 Dead 2 Server",
+      "serverpassword": "",
+      "rconpassword": "",
+      "maxplayers": 8,
+      "map": "c5m1_waterfront"
+    },
+    "environment": {
+      "type": "host"
+    }
+  },
+  {
+    "name": "left4dead2-docker",
+    "variables": {
+      "cpu": 100,
+      "disk": 20480,
+      "memory": 2048,
+      "ip": "0.0.0.0",
+      "port": 27015,
+      "clientport": 27005,
+      "servername": "Left 4 Dead 2 Server",
+      "serverpassword": "",
+      "rconpassword": "",
+      "maxplayers": 8,
+      "map": "c5m1_waterfront"
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]

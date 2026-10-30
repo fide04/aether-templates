@@ -1,0 +1,19 @@
+[
+  {
+    "name": "mongodb-docker",
+    "variables": {
+      "cpu": 100,
+      "disk": 10240,
+      "memory": 1024,
+      "ip": "0.0.0.0",
+      "port": 27017,
+      "version": "7",
+      "rootuser": "admin",
+      "rootpassword": "changeme",
+      "extraargs": ""
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]
