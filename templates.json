@@ -23,6 +23,7 @@
   "insurgencysandstorm": { "url": "insurgencysandstorm/insurgencysandstorm.json" },
   "java": { "url": "java/java.json" },
   "killingfloor2": { "url": "killingfloor2/killingfloor2.json" },
+  "laravel": { "url": "laravel/laravel.json" },
   "lavalink": { "url": "lavalink/lavalink.json" },
   "left4dead2": { "url": "left4dead2/left4dead2.json" },
   "mariadb": { "url": "mariadb/mariadb.json" },

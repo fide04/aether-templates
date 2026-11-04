@@ -1,0 +1,26 @@
+[
+  {
+    "name": "laravel-docker",
+    "variables": {
+      "cpu": 100,
+      "disk": 10240,
+      "memory": 1024,
+      "ip": "0.0.0.0",
+      "port": 8000,
+      "phpversion": "8.4",
+      "gitrepo": "",
+      "gitbranch": "",
+      "gittoken": "",
+      "createproject": true,
+      "migrate": false,
+      "optimize": false,
+      "installonstart": true,
+      "nodev": false,
+      "workers": 4,
+      "phpflags": ""
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]
