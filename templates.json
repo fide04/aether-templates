@@ -38,6 +38,7 @@
   "necesse": { "url": "necesse/necesse.json" },
   "nodejs": { "url": "nodejs/nodejs.json" },
   "palworld": { "url": "palworld/palworld.json" },
+  "php": { "url": "php/php.json" },
   "pocketmine": { "url": "pocketmine/pocketmine.json" },
   "postgresql": { "url": "postgresql/postgresql.json" },
   "python": { "url": "python/python.json" },
