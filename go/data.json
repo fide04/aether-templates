@@ -1,0 +1,42 @@
+[
+  {
+    "name": "go-docker",
+    "variables": {
+      "cpu": 100,
+      "disk": 10240,
+      "memory": 1024,
+      "ip": "0.0.0.0",
+      "port": 8000,
+      "goversion": "1.27",
+      "gitrepo": "",
+      "gitbranch": "",
+      "gittoken": "",
+      "buildtarget": ".",
+      "startargs": "",
+      "gorun": false
+    },
+    "environment": {
+      "type": "docker"
+    }
+  },
+  {
+    "name": "go",
+    "variables": {
+      "cpu": 100,
+      "disk": 10240,
+      "memory": 1024,
+      "ip": "0.0.0.0",
+      "port": 8000,
+      "goversion": "1.27",
+      "gitrepo": "",
+      "gitbranch": "",
+      "gittoken": "",
+      "buildtarget": ".",
+      "startargs": "",
+      "gorun": false
+    },
+    "environment": {
+      "type": "host"
+    }
+  }
+]

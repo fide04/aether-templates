@@ -18,6 +18,7 @@
   "factorio": { "url": "factorio/factorio.json" },
   "fivem": { "url": "fivem/fivem.json" },
   "gmod": { "url": "gmod/gmod.json" },
+  "go": { "url": "go/go.json" },
   "hytale": { "url": "hytale/hytale.json" },
   "insurgencysandstorm": { "url": "insurgencysandstorm/insurgencysandstorm.json" },
   "java": { "url": "java/java.json" },
