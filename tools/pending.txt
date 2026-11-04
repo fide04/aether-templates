@@ -26,7 +26,6 @@ valheim image
 zomboid image
 
 # default port 8080 is the panel's
-java port
 killingfloor2 port
 
 # host only: no Docker environment, so Docker installs cannot use them
