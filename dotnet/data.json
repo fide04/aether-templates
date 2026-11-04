@@ -1,0 +1,23 @@
+[
+  {
+    "name": "dotnet-docker",
+    "variables": {
+      "cpu": 100,
+      "disk": 10240,
+      "memory": 1024,
+      "ip": "0.0.0.0",
+      "port": 5000,
+      "dotnetversion": "10.0",
+      "gitrepo": "",
+      "gitbranch": "",
+      "gittoken": "",
+      "project": "",
+      "buildonstart": true,
+      "startdll": "",
+      "dotnetenv": "Production"
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]

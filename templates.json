@@ -13,6 +13,7 @@
   "discord-js": { "url": "discord-js/discord-js.json" },
   "discord-py": { "url": "discord-py/discord-py.json" },
   "dontstarvetogether": { "url": "dontstarvetogether/dontstarvetogether.json" },
+  "dotnet": { "url": "dotnet/dotnet.json" },
   "eco": { "url": "eco/eco.json" },
   "eco9": { "url": "eco9/eco9.json" },
   "factorio": { "url": "factorio/factorio.json" },
