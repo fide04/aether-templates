@@ -1,6 +1,7 @@
 {
   "type": "valheim",
   "display": "Valheim Dedicated Server",
+  "icon": "valheim",
   "data": {
     "cpu": {
       "type": "integer",

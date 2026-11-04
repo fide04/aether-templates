@@ -1,6 +1,7 @@
 {
   "type": "srcds",
   "display": "Unturned",
+  "icon": "unturned",
   "data": {
     "cpu": {
       "type": "integer",

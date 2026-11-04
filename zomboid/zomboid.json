@@ -1,6 +1,7 @@
 {
   "type": "zomboid",
   "display": "Project Zomboid",
+  "icon": "zomboid",
   "data": {
     "cpu": {
       "type": "integer",

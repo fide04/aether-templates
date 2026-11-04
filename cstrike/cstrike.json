@@ -1,5 +1,6 @@
 {
   "display": "Counter Strike 1.6",
+  "icon": "cstrike",
   "type": "goldsrc",
   "data": {
     "cpu": {

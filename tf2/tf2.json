@@ -1,6 +1,7 @@
 {
   "type": "srcds",
   "display": "Team Fortress 2",
+  "icon": "tf2",
   "data": {
     "cpu": {
       "type": "integer",

@@ -1,6 +1,7 @@
 {
   "type": "discord",
   "display": "discord.py Bot",
+  "icon": "discord",
   "data": {
     "cpu": {
       "type": "integer",

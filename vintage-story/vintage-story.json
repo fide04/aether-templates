@@ -1,6 +1,7 @@
 {
   "type": "custom",
   "display": "Vintage Story Server",
+  "icon": "vintagestory",
   "data": {
     "cpu": {
       "type": "integer",

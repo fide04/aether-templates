@@ -1,6 +1,7 @@
 {
   "type": "discord",
   "display": "discord.js",
+  "icon": "discord",
   "data": {
     "cpu": {
       "type": "integer",

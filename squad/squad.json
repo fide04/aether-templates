@@ -1,6 +1,7 @@
 {
   "type": "squad",
   "display": "SQUAD Dedicated Server",
+  "icon": "squad",
   "data": {
     "cpu": {
       "type": "integer",

@@ -1,6 +1,7 @@
 {
   "type": "stn",
   "display": "Survive The Nights",
+  "icon": "stn",
   "data": {
     "cpu": {
       "type": "integer",

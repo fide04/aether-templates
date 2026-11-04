@@ -1,6 +1,7 @@
 {
   "type": "discord",
   "display": "JDA Bot",
+  "icon": "discord",
   "data": {
     "cpu": {
       "type": "integer",

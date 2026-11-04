@@ -1,6 +1,7 @@
 {
   "type": "voice",
   "display": "Teamspeak 3",
+  "icon": "teamspeak3",
   "data": {
     "cpu": {
       "type": "integer",

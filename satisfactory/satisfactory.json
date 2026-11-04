@@ -1,6 +1,7 @@
 {
   "type": "srcds",
   "display": "Satisfactory",
+  "icon": "satisfactory",
   "data": {
     "cpu": {
       "type": "integer",
