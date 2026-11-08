@@ -62,9 +62,10 @@ what is new or changed:
   Docker socket), a privileged container, `LD_PRELOAD`.
 - **Review**: a download from a host outside the trusted list, `sudo`, background processes,
   `eval`, encoded text, a download from a raw IP, unusual Docker settings, environment variables
-  that change how programs run, paths with `..`. These go to Claude (`claude-opus-5-5`), which
-  answers safe, unsafe or unsure. Only "safe" passes. Without `ANTHROPIC_API_KEY`, or when Claude
-  cannot answer, they fail and need a person.
+  that change how programs run, paths with `..`. These go to an AI on Cloudflare Workers AI
+  (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`, free up to 10,000 neurons a day; a review costs a
+  few hundred), which answers safe, unsafe or unsure. Only "safe" passes. Without its
+  credentials, or when the AI cannot answer, they fail and need a person.
 
 A review finding a person has checked and accepts goes in `tools/security-allow.txt` (the report
 prints the exact line). Blocks cannot be accepted: change the template.
@@ -77,6 +78,6 @@ Run it locally with `pip install -r tools/requirements.txt` and
 
 | Secret | Used for |
 |---|---|
-| `CLOUDFLARE_API_TOKEN` | Publishing: a token with **Account → Cloudflare Pages → Edit** |
-| `CLOUDFLARE_ACCOUNT_ID` | Publishing: the Cloudflare account that has the project |
-| `ANTHROPIC_API_KEY` | Claude's review of the security check's review findings |
+| `CLOUDFLARE_API_TOKEN` | Publishing (**Account → Cloudflare Pages → Edit**) and the AI review (**Workers AI → Read** and **Edit**) |
+| `CLOUDFLARE_ACCOUNT_ID` | The Cloudflare account that has the project and Workers AI |
+| `CLOUDFLARE_AI_TOKEN` | Optional: a separate token for the AI review, used instead of `CLOUDFLARE_API_TOKEN` |

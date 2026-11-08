@@ -37,7 +37,9 @@ jobs:
       - name: Security check
         id: security
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_AI_TOKEN: ${{ secrets.CLOUDFLARE_AI_TOKEN }}
           EVENT: ${{ github.event_name }}
           PR_BASE: ${{ github.base_ref }}
           PUSH_BEFORE: ${{ github.event.before }}

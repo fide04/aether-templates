@@ -10,10 +10,11 @@ before it reaches templates.aetherpanel.es:
    - "block": clearly dangerous (a reverse shell, piping a download into a shell, a miner,
      wiping the disk, touching the host system). The check fails.
    - "review": unusual but possibly legitimate (a download from a host that is not on the trusted
-     list, sudo, background processes, an unusual Docker setting). Claude judges these (step 2).
-2. The review findings, with the template's old and new JSON, go to Claude, which answers safe,
-   unsafe or unsure. Only "safe" lets them through. Without ANTHROPIC_API_KEY, or when the answer
-   cannot be had, review findings fail the check (closed by default).
+     list, sudo, background processes, an unusual Docker setting). An AI judges these (step 2).
+2. The review findings, with the template's old and new JSON, go to an AI model on Cloudflare
+   Workers AI (free daily allocation), which answers safe, unsafe or unsure. Only "safe" lets them
+   through. Without its credentials, or when the answer cannot be had, review findings fail the
+   check (closed by default).
 
 A review finding a maintainer has looked at and accepts is listed in tools/security-allow.txt as
 "<template> <rule> <detail>", the detail being the host, variable or Docker key the report names, or
@@ -22,7 +23,7 @@ the JSON path for the other rules (see that file). Block findings cannot be acce
 usage:
   python3 tools/security_check.py --base <git ref>   # templates changed since <ref>
   python3 tools/security_check.py --all              # every template, everything counts as new
-  options: --report <file> writes the report (Markdown, Spanish); --no-ai skips Claude
+  options: --report <file> writes the report (Markdown, Spanish); --no-ai skips the AI
 exit code: 0 when everything passes, 1 otherwise.
 """
 import argparse
@@ -290,9 +291,13 @@ def rule_findings(name, new, old):
     return found
 
 
-# ---- Claude, for the review findings ----
+# ---- the AI, for the review findings ----
 
-MODEL = "claude-opus-5-5"
+# Cloudflare Workers AI: free up to 10,000 neurons a day (a review costs a few hundred). Its JSON
+# mode returns the verdict as an object. Needs CLOUDFLARE_ACCOUNT_ID and a token with
+# Workers AI Read and Edit (CLOUDFLARE_AI_TOKEN, or CLOUDFLARE_API_TOKEN when that one has them).
+AI_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+AI_URL = "https://api.cloudflare.com/client/v4/accounts/{account}/ai/run/{model}"
 
 SYSTEM_PROMPT = """You review changes to server templates for Aether Panel, a game server hosting panel.
 A template is JSON. Its install steps, start command and the files it writes run on the hosting
@@ -340,17 +345,34 @@ VERDICT_SCHEMA = {
 }
 
 
-def ai_review(name, new, old, findings, client=None):
-    """Claude's verdict on a template's review findings: {"verdict", "summary", "findings"}.
-    Fails closed: any problem answers "unsure" with the reason."""
-    if client is None and not os.environ.get("ANTHROPIC_API_KEY"):
-        return {"verdict": "unsure", "summary": "No hay ANTHROPIC_API_KEY: estos avisos necesitan revisión manual.", "findings": []}
+
+def _cloudflare_post(url, token, body, timeout=120):
+    """POSTs JSON to the Workers AI REST API and returns the decoded answer."""
+    import urllib.error
+    import urllib.request
+    request = urllib.request.Request(url, data=json.dumps(body).encode(), method="POST",
+                                     headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"})
     try:
-        import anthropic
-    except ImportError:
-        return {"verdict": "unsure", "summary": "Falta la librería anthropic (tools/requirements.txt): necesita revisión manual.", "findings": []}
-    if client is None:
-        client = anthropic.Anthropic()
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            return json.loads(response.read())
+    except urllib.error.HTTPError as e:
+        try:
+            return json.loads(e.read())
+        except ValueError:
+            return {"success": False, "errors": [{"message": f"HTTP {e.code}"}]}
+
+
+def _unsure(reason):
+    return {"verdict": "unsure", "summary": f"{reason}: necesita revisión manual.", "findings": []}
+
+
+def ai_review(name, new, old, findings, post=None):
+    """The AI's verdict on a template's review findings: {"verdict", "summary", "findings"}.
+    Fails closed: any problem answers "unsure" with the reason."""
+    account = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
+    token = os.environ.get("CLOUDFLARE_AI_TOKEN") or os.environ.get("CLOUDFLARE_API_TOKEN", "")
+    if post is None and not (account and token):
+        return _unsure("No hay CLOUDFLARE_ACCOUNT_ID y token de Workers AI")
     flagged = [{"where": f.where, "rule": f.rule, "why": f.why, "text": f.text} for f in findings]
     content = (
         f"Template: {name}\n\n"
@@ -358,30 +380,31 @@ def ai_review(name, new, old, findings, client=None):
         f"Previous version of the template (JSON, null if new):\n{json.dumps(old, indent=2, ensure_ascii=False)}\n\n"
         f"New version of the template (JSON):\n{json.dumps(new, indent=2, ensure_ascii=False)}"
     )
+    body = {
+        "messages": [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": content}],
+        "response_format": {"type": "json_schema", "json_schema": VERDICT_SCHEMA},
+        "max_tokens": 2048,
+    }
     try:
-        response = client.beta.messages.create(
-            model=MODEL,
-            max_tokens=16000,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": content}],
-            output_config={"effort": "high", "format": {"type": "json_schema", "schema": VERDICT_SCHEMA}},
-            betas=["server-side-fallback-2026-07-01"],
-            fallbacks="default",
-        )
-    except anthropic.APIError as e:
-        return {"verdict": "unsure", "summary": f"No se pudo consultar a Claude ({type(e).__name__}): necesita revisión manual.", "findings": []}
-    if response.stop_reason == "refusal":
-        return {"verdict": "unsure", "summary": "Claude no quiso evaluar el cambio: necesita revisión manual.", "findings": []}
-    if response.stop_reason == "max_tokens":
-        return {"verdict": "unsure", "summary": "La respuesta de Claude se cortó: necesita revisión manual.", "findings": []}
-    text = next((b.text for b in response.content if b.type == "text"), "")
-    try:
-        verdict = json.loads(text)
-        if verdict.get("verdict") not in ("safe", "unsafe", "unsure"):
-            raise ValueError(verdict.get("verdict"))
-    except (ValueError, TypeError) as e:
-        return {"verdict": "unsure", "summary": f"Respuesta de Claude no válida ({e}): necesita revisión manual.", "findings": []}
-    return verdict
+        answer = (post or _cloudflare_post)(AI_URL.format(account=account, model=AI_MODEL), token, body)
+    except (OSError, ValueError) as e:
+        return _unsure(f"No se pudo consultar a la IA ({type(e).__name__})")
+    if not isinstance(answer, dict) or not answer.get("success"):
+        errors = answer.get("errors") if isinstance(answer, dict) else None
+        detail = "; ".join(str(e.get("message", e)) if isinstance(e, dict) else str(e) for e in errors or [])
+        return _unsure(f"La IA respondió con un error ({detail or 'sin detalle'})")
+    verdict = (answer.get("result") or {}).get("response")
+    if isinstance(verdict, str):
+        try:
+            verdict = json.loads(verdict)
+        except ValueError:
+            return _unsure("La respuesta de la IA no es JSON")
+    if not isinstance(verdict, dict) or verdict.get("verdict") not in ("safe", "unsafe", "unsure") \
+            or not isinstance(verdict.get("summary"), str):
+        return _unsure("La respuesta de la IA no tiene el formato esperado")
+    findings_out = verdict.get("findings") if isinstance(verdict.get("findings"), list) else []
+    return {"verdict": verdict["verdict"], "summary": verdict["summary"],
+            "findings": [f for f in findings_out if isinstance(f, dict)]}
 
 
 # ---- report ----
@@ -405,10 +428,10 @@ def report(results):
             state = "❌ bloqueada"
             passed = False
         elif reviews and (not verdict or verdict["verdict"] != "safe"):
-            state = "⚠️ necesita revisión" if not verdict or verdict["verdict"] == "unsure" else "❌ insegura según Claude"
+            state = "⚠️ necesita revisión" if not verdict or verdict["verdict"] == "unsure" else "❌ insegura según la IA"
             passed = False
         elif reviews:
-            state = "✅ aprobada por Claude"
+            state = "✅ aprobada por la IA"
         else:
             state = "✅ sin avisos"
         lines.append(f"### `{name}`: {state}")
@@ -418,7 +441,7 @@ def report(results):
             lines.append(f"  `{_short(f.text)}`")
         if verdict and reviews:
             lines.append("")
-            lines.append(f"**Claude ({verdict['verdict']}):** {verdict['summary']}")
+            lines.append(f"**IA ({verdict['verdict']}):** {verdict['summary']}")
             for a in verdict.get("findings", []):
                 lines.append(f"- `{a.get('where', '')}` ({a.get('rule', '')}): {a.get('assessment', '')}")
         lines.append("")
@@ -432,7 +455,7 @@ def main(argv=None):
     scope.add_argument("--base", help="git ref to compare with: only templates changed since it are checked")
     scope.add_argument("--all", action="store_true", help="check every template, all of it as new")
     parser.add_argument("--report", help="write the report (Markdown) to this file")
-    parser.add_argument("--no-ai", action="store_true", help="do not ask Claude; review findings fail")
+    parser.add_argument("--no-ai", action="store_true", help="do not ask the AI; review findings fail")
     args = parser.parse_args(argv)
 
     if args.all:
@@ -448,7 +471,7 @@ def main(argv=None):
         reviews = [f for f in findings if f.level == "review"]
         if reviews and not any(f.level == "block" for f in findings):
             if args.no_ai:
-                verdict = {"verdict": "unsure", "summary": "Sin consulta a Claude (--no-ai): necesita revisión manual.", "findings": []}
+                verdict = {"verdict": "unsure", "summary": "Sin consulta a la IA (--no-ai): necesita revisión manual.", "findings": []}
             else:
                 verdict = ai_review(name, new, old, reviews)
         results.append((name, findings, verdict))
