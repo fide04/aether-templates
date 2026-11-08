@@ -38,3 +38,11 @@ one the panel uses (8080, 8081, 5657, 3307). Known problems waiting for a fix ar
 `tools/pending.txt`; remove the line in the change that fixes it.
 
 Run it locally with `pip install jsonschema && python3 tools/validate.py`.
+
+# Publishing
+
+templates.aetherpanel.es is served by Cloudflare Pages from the `main` branch of this repository.
+On every push Pages runs `sh tools/build.sh`: it runs the check above and copies `templates.json`
+and each template folder to `public/`, which is what the site serves. A push that fails the check
+is not published; the site keeps the previous version. A merge to `main` is live within a minute or
+two, and every pull request gets its own preview address.
