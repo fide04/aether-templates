@@ -111,8 +111,10 @@ class NoFalseAlarms(unittest.TestCase):
                      steps=[{"type": "writefile", "target": "/Servers/x/Commands.dat", "text": "Port 27015\n"}])
         self.assertEqual([(f.rule, f.text) for f in findings(t)], [])
 
-    def test_every_published_template_passes(self):
-        self.assertEqual(sc.main(["--all", "--no-ai"]), 0)
+    def test_the_scan_reads_every_template(self):
+        # whether the templates pass is the security check's job (its own workflow step), not
+        # the tests': a pull request with a review finding must still reach that step
+        self.assertIn(sc.main(["--all", "--no-ai"]), (0, 1))
 
 
 class OnlyWhatChanged(unittest.TestCase):
