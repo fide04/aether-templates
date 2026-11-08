@@ -1,0 +1,93 @@
+name: Check and publish
+
+# Every pull request: format check (validate.py), the bot's tests and the security check of the
+# templates it changes, with the report as a comment on the pull request.
+# Every push to main: the same checks on what the push changed, then, only if they pass, the
+# templates are published to Cloudflare Pages (templates.aetherpanel.es).
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: check-and-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -r tools/requirements.txt
+      - name: Format check
+        run: python3 tools/validate.py
+      - name: Tests of the security check
+        run: python3 -m unittest discover -s tools -p "test_*.py"
+      - name: Security check
+        id: security
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          EVENT: ${{ github.event_name }}
+          PR_BASE: ${{ github.base_ref }}
+          PUSH_BEFORE: ${{ github.event.before }}
+        run: |
+          if [ "$EVENT" = pull_request ]; then
+            scope="--base origin/$PR_BASE"
+          elif [ "$EVENT" = push ] && [ -n "$PUSH_BEFORE" ] && [ "$PUSH_BEFORE" != 0000000000000000000000000000000000000000 ]; then
+            scope="--base $PUSH_BEFORE"
+          else
+            scope="--all"
+          fi
+          set +e
+          python3 tools/security_check.py $scope --report security-report.md
+          echo "status=$?" >> "$GITHUB_OUTPUT"
+      - name: Report
+        if: always() && steps.security.outcome != 'skipped'
+        run: '[ -f security-report.md ] && cat security-report.md >> "$GITHUB_STEP_SUMMARY" || true'
+      - name: Comment on the pull request
+        if: always() && github.event_name == 'pull_request' && steps.security.outcome != 'skipped'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: '[ -f security-report.md ] && gh pr comment "$PR" --body-file security-report.md --edit-last --create-if-none || true'
+      - name: Security check result
+        if: steps.security.outputs.status != '0'
+        run: |
+          echo "::error::La revisión de seguridad no ha pasado: mira el informe del resumen o del comentario del PR."
+          exit 1
+
+  publish:
+    needs: check
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Build public/
+        run: sh tools/build.sh
+      - name: Publish to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Faltan los secretos CLOUDFLARE_API_TOKEN y CLOUDFLARE_ACCOUNT_ID del repositorio: no se publica nada."
+            exit 1
+          fi
+          npx --yes wrangler@4.152.0 pages deploy public --project-name aether-templates --branch main --commit-hash "$GITHUB_SHA" --commit-dirty=true

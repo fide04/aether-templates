@@ -41,8 +41,42 @@ Run it locally with `pip install jsonschema && python3 tools/validate.py`.
 
 # Publishing
 
-templates.aetherpanel.es is served by Cloudflare Pages from the `main` branch of this repository.
-On every push Pages runs `sh tools/build.sh`: it runs the check above and copies `templates.json`
-and each template folder to `public/`, which is what the site serves. A push that fails the check
-is not published; the site keeps the previous version. A merge to `main` is live within a minute or
-two, and every pull request gets its own preview address.
+templates.aetherpanel.es is served by Cloudflare Pages (project `aether-templates`), published by
+`.github/workflows/check-and-publish.yml`:
+
+- **Every pull request** runs the format check (`tools/validate.py`), the tests of the security
+  check, and the **security check** (`tools/security_check.py`) on the templates it changes. The
+  security report is left as a comment on the pull request.
+- **Every push to `main`** runs the same checks on what it changed and, only if they pass, builds
+  `public/` (`tools/build.sh`) and publishes it with Wrangler. A failed check publishes nothing; the
+  site keeps the previous version.
+
+## Security check
+
+Everything a template runs or downloads (install, uninstall, pre and post steps, start and stop
+commands, files it writes, environment variables, Docker settings) is checked by rules, only for
+what is new or changed:
+
+- **Block** (the check fails): reverse shells, a download piped into a shell, hidden code
+  (base64 and the like), crypto miners, wiping the disk, touching the host (users, cron, firewall,
+  Docker socket), a privileged container, `LD_PRELOAD`.
+- **Review**: a download from a host outside the trusted list, `sudo`, background processes,
+  `eval`, encoded text, a download from a raw IP, unusual Docker settings, environment variables
+  that change how programs run, paths with `..`. These go to Claude (`claude-opus-5-5`), which
+  answers safe, unsafe or unsure. Only "safe" passes. Without `ANTHROPIC_API_KEY`, or when Claude
+  cannot answer, they fail and need a person.
+
+A review finding a person has checked and accepts goes in `tools/security-allow.txt` (the report
+prints the exact line). Blocks cannot be accepted: change the template.
+
+Run it locally with `pip install -r tools/requirements.txt` and
+`python3 tools/security_check.py --base origin/main` (or `--all`); tests with
+`python3 -m unittest discover -s tools -p "test_*.py"`.
+
+## Repository secrets
+
+| Secret | Used for |
+|---|---|
+| `CLOUDFLARE_API_TOKEN` | Publishing: a token with **Account → Cloudflare Pages → Edit** |
+| `CLOUDFLARE_ACCOUNT_ID` | Publishing: the Cloudflare account that has the project |
+| `ANTHROPIC_API_KEY` | Claude's review of the security check's review findings |
