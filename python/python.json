@@ -129,6 +129,12 @@
       "commands": [
         "bash -c \"set -e; PY=python3; if command -v \\\"python${pyversion}\\\" >/dev/null 2>&1; then PY=\\\"python${pyversion}\\\"; fi; V=\\\"$($PY -c 'import sys; print(\\\"%d.%d\\\" % sys.version_info[:2])')\\\"; if [ -d .venv ] && [ ! -d \\\".venv/lib/python$V\\\" ]; then echo \\\"Python version changed, recreating .venv\\\"; rm -rf .venv; fi; if [ ! -x .venv/bin/python ]; then echo \\\"Creating the virtual environment .venv (Python $V)\\\"; $PY -m venv .venv; fi; if [ -f requirements.txt ]; then echo \\\"Installing requirements.txt\\\"; .venv/bin/python -m pip install -q -r requirements.txt; fi\""
       ]
+    },
+    {
+      "type": "command",
+      "commands": [
+        "sudo apt-get install -y libsqlite3-0"
+      ]
     }
   ],
   "run": {
