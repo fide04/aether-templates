@@ -40,8 +40,6 @@ ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
 # Hosts the templates download from on purpose (the vendors of the games and runtimes, and their
 # CDNs). A download from anywhere else is a "review" finding. Subdomains of an entry count.
 TRUSTED_HOSTS = {
-    # code hosting and release assets
-    "github.com", "githubusercontent.com", "codeload.github.com", "api.github.com",
     # Minecraft and its servers, loaders and proxies
     "mojang.com", "minecraft.net", "papermc.io", "purpurmc.org", "spigotmc.org", "md-5.net",
     "neoforged.net", "minecraftforge.net", "fabricmc.net", "feed-the-beast.com",
@@ -57,6 +55,22 @@ TRUSTED_HOSTS = {
     # Eco's server builds are on Strange Loop Games' bucket
     "s3-us-west-2.amazonaws.com",
 }
+
+# GitHub is not trusted as a whole (anyone can publish a project there): only these projects,
+# the vendors' own, as "owner/repo" or a whole vendor organisation as "owner/*". A download from
+# any other GitHub project, or a githubdl step naming one, is a "review" finding.
+TRUSTED_GITHUB = {
+    "lavalink-devs/*",     # Lavalink and its plugins
+    "citizenfx/*",         # FiveM
+    "pmmp/*",              # PocketMine-MP
+    "pryaxis/*",           # TShock
+    "tmodloader/*",        # tModLoader
+}
+
+# GitHub's own hosts; the project is read from the address
+GITHUB_HOSTS = {"github.com", "www.github.com", "raw.githubusercontent.com", "codeload.github.com",
+                "api.github.com", "objects.githubusercontent.com", "release-assets.githubusercontent.com",
+                "gist.github.com", "gist.githubusercontent.com"}
 
 # Docker settings a template may set without review
 SAFE_DOCKER_KEYS = {"Init"}
@@ -96,7 +110,7 @@ URL_RE = re.compile(r"https?://[^\s\"'`<>)\\]+")
 @dataclass
 class Item:
     """Something a template runs, downloads, writes or sets."""
-    kind: str      # shell, file, url, env, docker, path
+    kind: str      # shell, file, url, repo (a GitHub project), env, docker, path
     where: str     # JSON path, for the report
     text: str
 
@@ -143,6 +157,8 @@ def items(template):
             for key in ("url", "downloadUrl"):
                 if step.get(key):
                     out.append(Item("url", f"{where}.{key}", str(step[key])))
+        elif kind == "githubdl" and step.get("repository"):
+            out.append(Item("repo", f"{where}.repository", str(step["repository"])))
         elif kind in ("move", "extract", "mkdir"):
             for key in ("source", "target", "destination"):
                 if step.get(key):
@@ -168,6 +184,21 @@ def items(template):
             for key, value in (env.get(section) or {}).items():
                 out.append(Item("docker", f"{where}.{section}.{key}", f"{key}={json.dumps(value, sort_keys=True)}"))
     return out
+
+
+def _github_project(host, path):
+    """The "owner/repo" an address on GitHub points at, or None when it names no project."""
+    segments = [p for p in path.split("/") if p]
+    if host == "api.github.com":
+        segments = segments[1:] if segments[:1] == ["repos"] else []
+    elif host not in ("github.com", "www.github.com", "raw.githubusercontent.com", "codeload.github.com"):
+        return None
+    return f"{segments[0]}/{segments[1]}" if len(segments) >= 2 else None
+
+
+def _github_trusted(project):
+    owner = project.split("/", 1)[0]
+    return project.lower() in TRUSTED_GITHUB or f"{owner.lower()}/*" in TRUSTED_GITHUB
 
 
 def _host_trusted(host):
@@ -208,9 +239,22 @@ def check_item(name, item):
             parts = urlsplit(url)
             if "${" in parts.netloc:
                 continue  # the host is a variable the server's owner fills in (their own download)
-            host = parts.hostname or ""
+            host = (parts.hostname or "").lower()
+            if host in GITHUB_HOSTS:
+                project = _github_project(host, parts.path)
+                if project and "${" in project:
+                    continue  # the project is one the server's owner names (their own repository)
+                if not project or not _github_trusted(project):
+                    label = project or host
+                    add("review", "github-project",
+                        f"descarga de GitHub ({label}), un proyecto que no está en la lista de proyectos de confianza", label)
+                continue
             if host and not _host_trusted(host):
                 add("review", "untrusted-host", f"descarga de {host}, que no está en la lista de dominios de confianza", host.lower())
+    if item.kind == "repo":
+        if "${" not in text and not _github_trusted(text):
+            add("review", "github-project",
+                f"descarga de GitHub ({text}), un proyecto que no está en la lista de proyectos de confianza", text)
     if item.kind == "env":
         var, value = text.split("=", 1)
         if var == "LD_LIBRARY_PATH" and _inside_server_folder(value):
