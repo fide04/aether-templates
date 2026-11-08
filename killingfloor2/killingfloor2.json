@@ -53,7 +53,7 @@
     },
     "webadminport": {
       "type": "integer",
-      "value": 8080,
+      "value": 8085,
       "display": "WebAdmin Port",
       "desc": "Port of the WebAdmin web panel (TCP), only used when WebAdmin is on",
       "required": true,
@@ -174,7 +174,7 @@
       "if": "env == 'docker'",
       "type": "command",
       "commands": [
-        "steamcmd +force_install_dir /SkyPanel +login anonymous +app_update 232130 validate +quit"
+        "bash -c \"for try in 1 2 3 4 5; do steamcmd +@sSteamCmdForcePlatformType linux +force_install_dir /SkyPanel +login anonymous +app_update 232130 validate +quit && exit 0; echo 'steamcmd could not finish the download, trying again in 15s ($try/5)'; sleep 15; done; exit 1\""
       ]
     },
     {
@@ -253,7 +253,7 @@
     },
     {
       "type": "docker",
-      "image": "steamcmd/steamcmd",
+      "image": "ghcr.io/aether-panel/steamcmd",
       "portBindings": [
         "0.0.0.0:${port}:${port}/udp",
         "0.0.0.0:${queryport}:${queryport}/udp",

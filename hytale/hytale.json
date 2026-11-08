@@ -156,6 +156,10 @@
   "run": {
     "command": [
       {
+        "if": "!file_exists('Server/HytaleServer.jar')",
+        "command": "bash -c \"echo 'Aether Panel: the Hytale server files are not installed. Reinstall the server and, within 10 minutes, open the sign-in link it shows in the console and log in with your Hytale account.'; exit 0\""
+      },
+      {
         "if": "env == 'host' && aotcache && file_exists('Server/HytaleServer.aot')",
         "command": "java25 -Xms1024M -Xmx${memory}M -XX:AOTCache=Server/HytaleServer.aot -jar Server/HytaleServer.jar --assets Assets.zip --bind ${ip}:${port}"
       },

@@ -146,12 +146,15 @@
     "command": [
       {
         "if": "txadmin",
-        "command": "bash ./run.sh +set serverProfile default +set txAdminPort ${txadminport}"
+        "command": "bash ./run.sh +set serverProfile default"
       },
       {
         "command": "bash ./run.sh +exec server.cfg"
       }
     ],
+    "environmentVars": {
+      "TXHOST_TXA_PORT": "${txadminport}"
+    },
     "stop": "quit",
     "stdin": {
       "type": "stdin"

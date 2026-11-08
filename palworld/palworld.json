@@ -102,7 +102,7 @@
       "if": "env == 'docker'",
       "type": "command",
       "commands": [
-        "steamcmd +force_install_dir /SkyPanel +login anonymous +app_update 2394010 validate +quit",
+        "bash -c \"for try in 1 2 3 4 5; do steamcmd +@sSteamCmdForcePlatformType linux +force_install_dir /SkyPanel +login anonymous +app_update 2394010 validate +quit && exit 0; echo 'steamcmd could not finish the download, trying again in 15s ($try/5)'; sleep 15; done; exit 1\"",
         "bash -c \"mkdir -p /SkyPanel/.steam/sdk64 && cp -f /SkyPanel/linux64/steamclient.so /SkyPanel/.steam/sdk64/steamclient.so 2>/dev/null || true\""
       ]
     },
@@ -121,10 +121,10 @@
     "command": [
       {
         "if": "publiclobby",
-        "command": "./PalServer.sh -port=${port} -queryport=${queryport} -players=${maxplayers} -publiclobby -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS"
+        "command": "bash -c \"if [ \\\"$(id -u)\\\" = 0 ] && id container >/dev/null 2>&1; then chown -R container:container . && exec setpriv --reuid=container --regid=container --init-groups env HOME=\\\"$PWD\\\" \\\"$@\\\"; fi; exec \\\"$@\\\"\" aether ./PalServer.sh -port=${port} -queryport=${queryport} -players=${maxplayers} -publiclobby -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS"
       },
       {
-        "command": "./PalServer.sh -port=${port} -queryport=${queryport} -players=${maxplayers} -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS"
+        "command": "bash -c \"if [ \\\"$(id -u)\\\" = 0 ] && id container >/dev/null 2>&1; then chown -R container:container . && exec setpriv --reuid=container --regid=container --init-groups env HOME=\\\"$PWD\\\" \\\"$@\\\"; fi; exec \\\"$@\\\"\" aether ./PalServer.sh -port=${port} -queryport=${queryport} -players=${maxplayers} -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS"
       }
     ],
     "pre": [
@@ -191,7 +191,7 @@
     },
     {
       "type": "docker",
-      "image": "steamcmd/steamcmd",
+      "image": "ghcr.io/aether-panel/steamcmd",
       "portBindings": [
         "0.0.0.0:${port}:${port}/udp",
         "0.0.0.0:${queryport}:${queryport}/udp"

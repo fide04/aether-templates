@@ -102,7 +102,7 @@
       "if": "env == 'docker'",
       "type": "command",
       "commands": [
-        "steamcmd +force_install_dir /SkyPanel +login anonymous +app_update 222860 validate +quit"
+        "bash -c \"for try in 1 2 3 4 5; do steamcmd +@sSteamCmdForcePlatformType windows +force_install_dir /SkyPanel +login anonymous +app_update 222860 +quit && steamcmd +@sSteamCmdForcePlatformType linux +force_install_dir /SkyPanel +login anonymous +app_update 222860 validate +quit && exit 0; echo 'steamcmd could not finish the download, trying again in 15s ($try/5)'; sleep 15; done; exit 1\""
       ]
     },
     {
