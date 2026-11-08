@@ -60,7 +60,8 @@ what is new or changed:
 - **Block** (the check fails): reverse shells, a download piped into a shell, hidden code
   (base64 and the like), crypto miners, wiping the disk, touching the host (users, cron, firewall,
   Docker socket), a privileged container, `LD_PRELOAD`.
-- **Review**: a download from a host outside the trusted list, `sudo`, background processes,
+- **Review**: a download from a host outside the trusted list or from a GitHub project outside
+  the trusted projects (`TRUSTED_GITHUB`: the vendors' own, such as `lavalink-devs/*`), `sudo`, background processes,
   `eval`, encoded text, a download from a raw IP, unusual Docker settings, environment variables
   that change how programs run, paths with `..`. These go to an AI on Cloudflare Workers AI
   (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`, free up to 10,000 neurons a day; a review costs a
