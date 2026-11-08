@@ -122,46 +122,69 @@ class OnlyWhatChanged(unittest.TestCase):
         self.assertEqual({f.rule for f in findings(new, old)}, {"background"})
 
 
-class ClaudeReview(unittest.TestCase):
-    def fake_client(self, *, stop_reason="end_turn", text=None, error=None):
+class AIReview(unittest.TestCase):
+    def fake_post(self, answer=None, error=None):
         calls = []
 
-        def create(**kwargs):
-            calls.append(kwargs)
+        def post(url, token, body):
+            calls.append({"url": url, "token": token, "body": body})
             if error:
                 raise error
-            body = text if text is not None else json.dumps({"verdict": "safe", "summary": "Descarga del fabricante.", "findings": []})
-            return SimpleNamespace(stop_reason=stop_reason, content=[SimpleNamespace(type="text", text=body)])
+            if answer is not None:
+                return answer
+            return {"success": True, "errors": [], "result": {"response": {"verdict": "safe", "summary": "Descarga del fabricante.", "findings": []}}}
 
-        client = SimpleNamespace(beta=SimpleNamespace(messages=SimpleNamespace(create=create)))
-        return client, calls
+        return post, calls
 
-    def review(self, client):
-        f = findings(template(["sudo apt-get install -y x"]))
-        return sc.ai_review("t", template(["sudo apt-get install -y x"]), None, f, client=client)
+    def review(self, post):
+        t = template(["sudo apt-get install -y x"])
+        with mock.patch.dict(os.environ, {"CLOUDFLARE_ACCOUNT_ID": "acc123", "CLOUDFLARE_API_TOKEN": "tok"}, clear=True):
+            return sc.ai_review("t", t, None, findings(t), post=post)
 
     def test_safe_verdict_and_request_shape(self):
-        client, calls = self.fake_client()
-        self.assertEqual(self.review(client)["verdict"], "safe")
-        req = calls[0]
-        self.assertEqual(req["model"], "claude-opus-5-5")
-        self.assertEqual(req["fallbacks"], "default")
-        self.assertEqual(req["betas"], ["server-side-fallback-2026-07-01"])
-        self.assertEqual(req["output_config"]["format"]["schema"], sc.VERDICT_SCHEMA)
-        self.assertIn("sudo apt-get install -y x", req["messages"][0]["content"])
-        self.assertIn("untrusted data", req["system"])
+        post, calls = self.fake_post()
+        self.assertEqual(self.review(post)["verdict"], "safe")
+        call = calls[0]
+        self.assertEqual(call["url"], "https://api.cloudflare.com/client/v4/accounts/acc123/ai/run/@cf/meta/llama-3.3-70b-instruct-fp8-fast")
+        self.assertEqual(call["token"], "tok")
+        body = call["body"]
+        self.assertEqual(body["response_format"], {"type": "json_schema", "json_schema": sc.VERDICT_SCHEMA})
+        self.assertEqual(body["messages"][0]["role"], "system")
+        self.assertIn("untrusted data", body["messages"][0]["content"])
+        self.assertIn("sudo apt-get install -y x", body["messages"][1]["content"])
+
+    def test_a_dedicated_ai_token_wins(self):
+        post, calls = self.fake_post()
+        t = template(["sudo x"])
+        env = {"CLOUDFLARE_ACCOUNT_ID": "a", "CLOUDFLARE_API_TOKEN": "pages", "CLOUDFLARE_AI_TOKEN": "ai"}
+        with mock.patch.dict(os.environ, env, clear=True):
+            sc.ai_review("t", t, None, findings(t), post=post)
+        self.assertEqual(calls[0]["token"], "ai")
+
+    def test_a_verdict_sent_as_text_is_read(self):
+        text = json.dumps({"verdict": "unsafe", "summary": "Descarga desconocida.", "findings": []})
+        post, _ = self.fake_post({"success": True, "result": {"response": text}})
+        self.assertEqual(self.review(post)["verdict"], "unsafe")
 
     def test_problems_fail_closed(self):
-        for kwargs in ({"stop_reason": "refusal"}, {"stop_reason": "max_tokens"}, {"text": "not json"},
-                       {"text": json.dumps({"verdict": "maybe", "summary": "", "findings": []})}):
-            with self.subTest(**kwargs):
-                client, _ = self.fake_client(**kwargs)
-                self.assertEqual(self.review(client)["verdict"], "unsure")
+        answers = [
+            {"success": False, "errors": [{"code": 4006, "message": "daily free allocation exceeded"}]},
+            {"success": True, "result": {"response": "not json"}},
+            {"success": True, "result": {"response": {"verdict": "maybe", "summary": "x"}}},
+            {"success": True, "result": {}},
+            "not a dict",
+        ]
+        for answer in answers:
+            with self.subTest(answer=answer):
+                post, _ = self.fake_post(answer)
+                self.assertEqual(self.review(post)["verdict"], "unsure")
+        post, _ = self.fake_post(error=OSError("timeout"))
+        self.assertEqual(self.review(post)["verdict"], "unsure")
 
-    def test_without_a_key_review_findings_need_a_person(self):
+    def test_without_credentials_review_findings_need_a_person(self):
         with mock.patch.dict(os.environ, {}, clear=True):
-            f = findings(template(["sudo x"]))
-            self.assertEqual(sc.ai_review("t", template(["sudo x"]), None, f)["verdict"], "unsure")
+            t = template(["sudo x"])
+            self.assertEqual(sc.ai_review("t", t, None, findings(t))["verdict"], "unsure")
 
 
 class Report(unittest.TestCase):
