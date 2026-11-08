@@ -1,0 +1,7 @@
+# Review findings of tools/security_check.py that a maintainer has looked at and accepts:
+# "<template> <rule> <detail>", as the report prints it after "Para aceptarlo".
+# The detail is the host, variable or Docker key, or the JSON path for the other rules.
+# Block findings cannot be listed here: change the template instead.
+
+# a link in a comment of the config file it writes, not a download
+stn untrusted-host steamid.io
