@@ -37,6 +37,7 @@
   "minecraft-waterfall": { "url": "minecraft-waterfall/minecraft-waterfall.json" },
   "mongodb": { "url": "mongodb/mongodb.json" },
   "mordhau": { "url": "mordhau/mordhau.json" },
+  "n8n": { "url": "n8n/n8n.json" },
   "necesse": { "url": "necesse/necesse.json" },
   "nodejs": { "url": "nodejs/nodejs.json" },
   "palworld": { "url": "palworld/palworld.json" },

@@ -24,7 +24,7 @@ ROOT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__file
 PANEL_PORTS = {8080: "the panel", 8081: "Adminer", 5657: "SFTP", 3307: "the panel's MariaDB"}
 
 # images published by the vendor of the software itself
-VENDOR_IMAGES = ("mcr.microsoft.com/dotnet/", "oven/bun")
+VENDOR_IMAGES = ("mcr.microsoft.com/dotnet/", "oven/bun", "n8nio/n8n")
 
 errors, warnings = [], []
 PENDING, USED = set(), set()

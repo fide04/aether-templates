@@ -1,0 +1,26 @@
+[
+  {
+    "name": "n8n-docker",
+    "variables": {
+      "cpu": 100,
+      "disk": 10240,
+      "memory": 2048,
+      "ip": "0.0.0.0",
+      "port": 5678,
+      "version": "stable",
+      "publicurl": "",
+      "httpsproxy": false,
+      "timezone": "Europe/Madrid",
+      "encryptionkey": "",
+      "dbtype": "sqlite",
+      "dbhost": "",
+      "dbport": 5432,
+      "dbname": "n8n",
+      "dbuser": "n8n",
+      "dbpassword": ""
+    },
+    "environment": {
+      "type": "docker"
+    }
+  }
+]

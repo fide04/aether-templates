@@ -1,0 +1,199 @@
+{
+  "type": "n8n",
+  "display": "n8n",
+  "icon": "n8n",
+  "data": {
+    "cpu": {
+      "type": "integer",
+      "value": 100,
+      "display": "CPU (100% = 1 thread)",
+      "desc": "CPU allocation in threads. 100% = 1 thread, 200% = 2 threads, 1000% = 10 threads",
+      "required": true,
+      "userEdit": false
+    },
+    "disk": {
+      "type": "integer",
+      "value": 10240,
+      "display": "Disk (MB)",
+      "desc": "Disk space allocation in MB (10240 MB = 10 GB)",
+      "required": true,
+      "userEdit": false
+    },
+    "memory": {
+      "type": "integer",
+      "value": 2048,
+      "display": "Memory (MB)",
+      "desc": "How much memory in MB to allocate. 1024 MB runs simple workflows, give more for big data or many executions",
+      "required": true,
+      "userEdit": false
+    },
+    "ip": {
+      "type": "string",
+      "value": "0.0.0.0",
+      "display": "IP",
+      "desc": "What IP to bind the server to",
+      "required": true,
+      "userEdit": false
+    },
+    "port": {
+      "type": "integer",
+      "value": 5678,
+      "display": "Port",
+      "desc": "Port of the n8n editor and webhooks (TCP, HTTP)",
+      "required": true,
+      "userEdit": false
+    },
+    "version": {
+      "type": "string",
+      "value": "stable",
+      "display": "n8n Version",
+      "desc": "Tag of the n8nio/n8n image: stable (newest release), beta, or an exact version such as 2.46.6. Reinstall to download the newest image of the tag. Going back to an older version is not supported",
+      "required": true,
+      "userEdit": true
+    },
+    "publicurl": {
+      "type": "string",
+      "value": "",
+      "display": "Public URL",
+      "desc": "Address people and webhooks use to reach n8n, for example https://n8n.example.com/ (behind a reverse proxy) or http://203.0.113.10:5678/. Empty shows localhost in webhook URLs",
+      "required": false,
+      "userEdit": true
+    },
+    "httpsproxy": {
+      "type": "boolean",
+      "value": false,
+      "display": "Behind an HTTPS Reverse Proxy",
+      "desc": "Turn on when n8n is reached through an HTTPS reverse proxy (Nginx, Caddy, Cloudflare Tunnel). It sends the login cookie over HTTPS only and trusts the proxy's X-Forwarded-For. Leave off to log in over plain http://",
+      "required": false,
+      "userEdit": true
+    },
+    "timezone": {
+      "type": "string",
+      "value": "Europe/Madrid",
+      "display": "Timezone",
+      "desc": "Timezone of Schedule Trigger and date nodes, as a TZ database name such as Europe/Madrid, America/Mexico_City or UTC",
+      "required": true,
+      "userEdit": true
+    },
+    "encryptionkey": {
+      "type": "string",
+      "value": "",
+      "display": "Encryption Key",
+      "desc": "Key that encrypts the saved credentials. Empty means n8n creates one on first start and keeps it in .n8n/config. Set it only to move an existing n8n here, with the key it already used",
+      "required": false,
+      "userEdit": true
+    },
+    "dbtype": {
+      "type": "option",
+      "value": "sqlite",
+      "display": "Database",
+      "desc": "Where n8n keeps workflows, credentials and executions. SQLite is a file in the server folder; PostgreSQL is better for many executions",
+      "required": true,
+      "userEdit": true,
+      "options": [
+        {
+          "value": "sqlite",
+          "display": "SQLite (in the server folder)"
+        },
+        {
+          "value": "postgresdb",
+          "display": "PostgreSQL"
+        }
+      ]
+    },
+    "dbhost": {
+      "type": "string",
+      "value": "",
+      "display": "PostgreSQL Host",
+      "desc": "Only for PostgreSQL. Address of the database server, for example the node address of a PostgreSQL server created in this panel",
+      "required": false,
+      "userEdit": true
+    },
+    "dbport": {
+      "type": "integer",
+      "value": 5432,
+      "display": "PostgreSQL Port",
+      "desc": "Only for PostgreSQL. Port of the database server",
+      "required": false,
+      "userEdit": true
+    },
+    "dbname": {
+      "type": "string",
+      "value": "n8n",
+      "display": "PostgreSQL Database",
+      "desc": "Only for PostgreSQL. Database n8n uses; it must exist",
+      "required": false,
+      "userEdit": true
+    },
+    "dbuser": {
+      "type": "string",
+      "value": "n8n",
+      "display": "PostgreSQL User",
+      "desc": "Only for PostgreSQL",
+      "required": false,
+      "userEdit": true
+    },
+    "dbpassword": {
+      "type": "string",
+      "value": "",
+      "display": "PostgreSQL Password",
+      "desc": "Only for PostgreSQL",
+      "required": false,
+      "userEdit": true
+    }
+  },
+  "install": [
+    {
+      "type": "mkdir",
+      "target": ".n8n"
+    },
+    {
+      "type": "dockerpull",
+      "imageName": "n8nio/n8n:${version}"
+    }
+  ],
+  "run": {
+    "command": "sh -c \"set -e; [ -n \\\"$WEBHOOK_URL\\\" ] || unset WEBHOOK_URL; [ -n \\\"$N8N_EDITOR_BASE_URL\\\" ] || unset N8N_EDITOR_BASE_URL; [ -n \\\"$N8N_ENCRYPTION_KEY\\\" ] || unset N8N_ENCRYPTION_KEY; if [ \\\"$N8N_SECURE_COOKIE\\\" = true ]; then export N8N_PROXY_HOPS=1; fi; exec tini -- /docker-entrypoint.sh start\"",
+    "stopCode": 15,
+    "environmentVars": {
+      "N8N_PORT": "${port}",
+      "N8N_LISTEN_ADDRESS": "0.0.0.0",
+      "N8N_USER_FOLDER": "/SkyPanel",
+      "WEBHOOK_URL": "${publicurl}",
+      "N8N_EDITOR_BASE_URL": "${publicurl}",
+      "N8N_SECURE_COOKIE": "${httpsproxy}",
+      "N8N_ENCRYPTION_KEY": "${encryptionkey}",
+      "N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS": "true",
+      "GENERIC_TIMEZONE": "${timezone}",
+      "TZ": "${timezone}",
+      "DB_TYPE": "${dbtype}",
+      "DB_POSTGRESDB_HOST": "${dbhost}",
+      "DB_POSTGRESDB_PORT": "${dbport}",
+      "DB_POSTGRESDB_DATABASE": "${dbname}",
+      "DB_POSTGRESDB_USER": "${dbuser}",
+      "DB_POSTGRESDB_PASSWORD": "${dbpassword}"
+    },
+    "stdin": {
+      "type": "stdin"
+    },
+    "autostart": false,
+    "autorecover": false,
+    "autorestart": false
+  },
+  "environment": {
+    "type": "docker",
+    "image": "n8nio/n8n:${version}",
+    "portBindings": [
+      "0.0.0.0:${port}:${port}/tcp"
+    ]
+  },
+  "supportedEnvironments": [
+    {
+      "type": "docker",
+      "image": "n8nio/n8n:${version}",
+      "portBindings": [
+        "0.0.0.0:${port}:${port}/tcp"
+      ]
+    }
+  ]
+}
