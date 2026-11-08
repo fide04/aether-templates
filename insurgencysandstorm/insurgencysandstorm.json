@@ -126,7 +126,7 @@
       "if": "env == 'docker'",
       "type": "command",
       "commands": [
-        "steamcmd +force_install_dir /SkyPanel +login anonymous +app_update 581330 validate +quit"
+        "bash -c \"for try in 1 2 3 4 5; do steamcmd +@sSteamCmdForcePlatformType linux +force_install_dir /SkyPanel +login anonymous +app_update 581330 validate +quit && exit 0; echo 'steamcmd could not finish the download, trying again in 15s ($try/5)'; sleep 15; done; exit 1\""
       ]
     },
     {
@@ -141,18 +141,18 @@
     "command": [
       {
         "if": "rconpassword != '' && gslt != ''",
-        "command": "./Insurgency/Binaries/Linux/InsurgencyServer-Linux-Shipping ${map}?Scenario=${scenario}?MaxPlayers=${maxplayers}?Password=${serverpassword} -Port=${port} -QueryPort=${queryport} -hostname=\"${servername}\" -Rcon -RconPassword=\"${rconpassword}\" -RconListenPort=${rconport} -GSLTToken=${gslt} -log"
+        "command": "bash -c \"if [ \\\"$(id -u)\\\" = 0 ] && id container >/dev/null 2>&1; then chown -R container:container . && exec setpriv --reuid=container --regid=container --init-groups env HOME=\\\"$PWD\\\" \\\"$@\\\"; fi; exec \\\"$@\\\"\" aether ./Insurgency/Binaries/Linux/InsurgencyServer-Linux-Shipping ${map}?Scenario=${scenario}?MaxPlayers=${maxplayers}?Password=${serverpassword} -Port=${port} -QueryPort=${queryport} -hostname=\"${servername}\" -Rcon -RconPassword=\"${rconpassword}\" -RconListenPort=${rconport} -GSLTToken=${gslt} -log"
       },
       {
         "if": "rconpassword != ''",
-        "command": "./Insurgency/Binaries/Linux/InsurgencyServer-Linux-Shipping ${map}?Scenario=${scenario}?MaxPlayers=${maxplayers}?Password=${serverpassword} -Port=${port} -QueryPort=${queryport} -hostname=\"${servername}\" -Rcon -RconPassword=\"${rconpassword}\" -RconListenPort=${rconport} -log"
+        "command": "bash -c \"if [ \\\"$(id -u)\\\" = 0 ] && id container >/dev/null 2>&1; then chown -R container:container . && exec setpriv --reuid=container --regid=container --init-groups env HOME=\\\"$PWD\\\" \\\"$@\\\"; fi; exec \\\"$@\\\"\" aether ./Insurgency/Binaries/Linux/InsurgencyServer-Linux-Shipping ${map}?Scenario=${scenario}?MaxPlayers=${maxplayers}?Password=${serverpassword} -Port=${port} -QueryPort=${queryport} -hostname=\"${servername}\" -Rcon -RconPassword=\"${rconpassword}\" -RconListenPort=${rconport} -log"
       },
       {
         "if": "gslt != ''",
-        "command": "./Insurgency/Binaries/Linux/InsurgencyServer-Linux-Shipping ${map}?Scenario=${scenario}?MaxPlayers=${maxplayers}?Password=${serverpassword} -Port=${port} -QueryPort=${queryport} -hostname=\"${servername}\" -GSLTToken=${gslt} -log"
+        "command": "bash -c \"if [ \\\"$(id -u)\\\" = 0 ] && id container >/dev/null 2>&1; then chown -R container:container . && exec setpriv --reuid=container --regid=container --init-groups env HOME=\\\"$PWD\\\" \\\"$@\\\"; fi; exec \\\"$@\\\"\" aether ./Insurgency/Binaries/Linux/InsurgencyServer-Linux-Shipping ${map}?Scenario=${scenario}?MaxPlayers=${maxplayers}?Password=${serverpassword} -Port=${port} -QueryPort=${queryport} -hostname=\"${servername}\" -GSLTToken=${gslt} -log"
       },
       {
-        "command": "./Insurgency/Binaries/Linux/InsurgencyServer-Linux-Shipping ${map}?Scenario=${scenario}?MaxPlayers=${maxplayers}?Password=${serverpassword} -Port=${port} -QueryPort=${queryport} -hostname=\"${servername}\" -log"
+        "command": "bash -c \"if [ \\\"$(id -u)\\\" = 0 ] && id container >/dev/null 2>&1; then chown -R container:container . && exec setpriv --reuid=container --regid=container --init-groups env HOME=\\\"$PWD\\\" \\\"$@\\\"; fi; exec \\\"$@\\\"\" aether ./Insurgency/Binaries/Linux/InsurgencyServer-Linux-Shipping ${map}?Scenario=${scenario}?MaxPlayers=${maxplayers}?Password=${serverpassword} -Port=${port} -QueryPort=${queryport} -hostname=\"${servername}\" -log"
       }
     ],
     "stopCode": 2,
@@ -172,7 +172,7 @@
     },
     {
       "type": "docker",
-      "image": "steamcmd/steamcmd",
+      "image": "ghcr.io/aether-panel/steamcmd",
       "portBindings": [
         "0.0.0.0:${port}:${port}/udp",
         "0.0.0.0:${queryport}:${queryport}/udp",
