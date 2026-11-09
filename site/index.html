@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plantillas de Aether Panel</title>
+<meta name="description" content="Juegos, bots, bases de datos y servicios que cualquier panel Aether puede instalar.">
+<link rel="icon" href="emblem.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#0d1420; --deck:#151e2c; --deck-2:#1c2738; --line:#2a3649;
+  --ink:#eef3f9; --mist:#9fb0c4; --sky:#4aa7d6; --gold:#ddbd63; --plate:#eef1f5;
+  --focus:#ddbd63;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]){
+    --night:#f3f6fa; --deck:#ffffff; --deck-2:#eaf0f6; --line:#d3dce7;
+    --ink:#121a27; --mist:#526073; --sky:#1f6f9c; --gold:#9a7413; --plate:#ffffff;
+    --focus:#1f6f9c; color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --night:#f3f6fa; --deck:#ffffff; --deck-2:#eaf0f6; --line:#d3dce7;
+  --ink:#121a27; --mist:#526073; --sky:#1f6f9c; --gold:#9a7413; --plate:#ffffff;
+  --focus:#1f6f9c; color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--night);color:var(--ink);font:16px/1.55 Geist,system-ui,sans-serif;font-feature-settings:"ss01"}
+a{color:var(--sky)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+@media (min-width:720px){.wrap{padding:0 32px}}
+
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px 0}
+.brand{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;font-weight:600}
+.brand img{width:34px;height:34px}
+.lang{display:flex;gap:2px;background:var(--deck);border:1px solid var(--line);border-radius:8px;padding:2px}
+.lang button{all:unset;cursor:pointer;padding:4px 9px;border-radius:6px;font-size:13px;color:var(--mist)}
+.lang button[aria-pressed="true"]{background:var(--deck-2);color:var(--ink)}
+
+.hero{padding:28px 0 8px}
+.hero h1{margin:0;font-size:clamp(15px,1.4vw,17px);font-weight:500;color:var(--mist)}
+.search{display:block;position:relative;margin:10px 0 0}
+.search input{width:100%;background:transparent;border:0;border-bottom:2px solid var(--line);color:var(--ink);
+  font:800 clamp(34px,7.2vw,76px)/1.1 Geist,system-ui,sans-serif;letter-spacing:-.035em;padding:4px 0 14px;caret-color:var(--gold);border-radius:0}
+.search input::placeholder{color:var(--ink);opacity:.92}
+.search input:focus{outline:none;border-bottom-color:var(--gold)}
+.search input:focus::placeholder{opacity:.28}
+.lead{max-width:62ch;margin:16px 0 0;color:var(--mist)}
+
+.kinds{display:flex;flex-wrap:wrap;gap:6px;margin:24px 0 0;padding:0;list-style:none}
+.kinds button{all:unset;cursor:pointer;display:inline-flex;gap:7px;align-items:baseline;padding:7px 13px;border:1px solid var(--line);border-radius:999px;font-size:14px;color:var(--mist)}
+.kinds button span{font-variant-numeric:tabular-nums;font-size:12px;opacity:.75}
+.kinds button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--night)}
+
+.list{margin:20px 0 0;padding:0;list-style:none;border-top:1px solid var(--line)}
+.row{border-bottom:1px solid var(--line)}
+.row button{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:grid;grid-template-columns:44px 1fr auto;gap:14px;align-items:center;padding:12px 4px}
+.row button:hover .name{color:var(--sky)}
+.row button:focus-visible{outline-offset:-2px}
+.logo{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;overflow:hidden;background:var(--deck-2);flex:none}
+.logo img{width:100%;height:100%;object-fit:cover}
+.logo.plate{background:var(--plate)}
+.logo.plate img{width:72%;height:72%;object-fit:contain}
+.logo b{font-size:17px;color:var(--mist)}
+.name{font-weight:600;line-height:1.3}
+.sub{font-size:13.5px;color:var(--mist);margin-top:2px}
+.specs{display:none;gap:22px;font-size:13.5px;color:var(--mist);font-variant-numeric:tabular-nums;text-align:right}
+.specs dt{font-size:12px;opacity:.8}
+.specs dd{margin:0;color:var(--ink)}
+@media (min-width:760px){.specs{display:grid;grid-template-columns:72px 72px 64px}}
+.empty{padding:40px 4px;color:var(--mist)}
+
+.use{margin:56px 0 0;padding:24px 0 0;border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+@media (min-width:860px){.use{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:40px}}
+.use h2{margin:0;font-size:20px;letter-spacing:-.01em}
+.use p{margin:6px 0 0;color:var(--mist);max-width:60ch}
+.url{display:flex;align-items:center;gap:8px;background:var(--deck);border:1px solid var(--line);border-radius:10px;padding:6px 6px 6px 14px;min-width:0;align-self:start}
+.url code{font:500 14px "Geist Mono",ui-monospace,monospace;overflow-x:auto;white-space:nowrap;flex:1;min-width:0;scrollbar-width:none}
+.btn{all:unset;cursor:pointer;flex:none;background:var(--ink);color:var(--night);font-weight:600;font-size:14px;padding:8px 14px;border-radius:7px}
+.hint{font-size:13.5px;color:var(--mist);margin:8px 0 0}
+.hint code{font:13px "Geist Mono",ui-monospace,monospace;color:var(--ink)}
+footer{margin:56px 0 40px;font-size:13.5px;color:var(--mist);display:flex;flex-wrap:wrap;gap:6px 18px}
+
+dialog{border:1px solid var(--line);background:var(--deck);color:var(--ink);border-radius:16px;padding:0;width:min(640px,calc(100vw - 24px));max-height:min(86vh,900px);overflow-x:hidden}
+dialog::backdrop{background:rgb(4 8 14/.62)}
+dialog[open]{animation:pop .18s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}}
+@media (prefers-reduced-motion:reduce){dialog[open]{animation:none}}
+.d-head{display:flex;gap:14px;align-items:center;padding:20px 20px 0}
+.d-head .logo{width:56px;height:56px;border-radius:12px}
+.d-head h2{margin:0;font-size:22px;line-height:1.2;letter-spacing:-.015em}
+.close{all:unset;cursor:pointer;margin-left:auto;align-self:start;width:34px;height:34px;display:grid;place-items:center;border-radius:8px;color:var(--mist);font-size:22px}
+.close:hover{background:var(--deck-2);color:var(--ink)}
+.d-body{padding:16px 20px 22px;overflow-wrap:anywhere}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:0}
+.facts div{background:var(--deck);padding:10px 12px}
+.facts div.wide{grid-column:1/-1}
+@media (min-width:560px){.facts{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.facts dt{font-size:12px;color:var(--mist)}
+.facts dd{margin:2px 0 0;font-weight:600;font-variant-numeric:tabular-nums}
+.d-body h3{font-size:15px;margin:22px 0 4px}
+.d-body h3 + p{margin:0 0 6px;font-size:13.5px;color:var(--mist)}
+.settings{list-style:none;margin:0;padding:0}
+.settings li{padding:10px 0;border-bottom:1px solid var(--line)}
+.settings li:last-child{border-bottom:0}
+.settings .s-name{font-weight:500}
+.settings .s-val{font:13px "Geist Mono",ui-monospace,monospace;color:var(--gold);margin-left:6px;word-break:break-all}
+.settings .s-desc{font-size:13.5px;color:var(--mist);margin-top:2px}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.links a{display:inline-block;padding:8px 14px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500}
+.links a:hover{border-color:var(--sky)}
+.links a.main{background:var(--ink);border-color:var(--ink);color:var(--night)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="./"><img src="emblem.svg" alt="" width="34" height="34"><span>Aether Panel</span></a>
+    <div class="lang" role="group" aria-label="Idioma / Language">
+      <button type="button" data-lang="es">ES</button><button type="button" data-lang="en">EN</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1 data-t="title"></h1>
+      <label class="search"><span class="sr" data-t="searchLabel"></span>
+        <input id="q" type="search" autocomplete="off" spellcheck="false">
+      </label>
+      <p class="lead" data-t="lead"></p>
+      <ul class="kinds" id="kinds"></ul>
+    </section>
+
+    <ul class="list" id="list" aria-live="polite"></ul>
+
+    <section class="use">
+      <div>
+        <h2 data-t="useTitle"></h2>
+        <p data-t="useText"></p>
+      </div>
+      <div>
+        <div class="url"><code id="url">https://templates.aetherpanel.es/templates.json</code><button class="btn" type="button" id="copy" data-t="copy"></button></div>
+        <p class="hint" data-t="useHint"></p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span data-t="footer"></span>
+    <a id="repo" data-t="repo"></a>
+  </footer>
+</div>
+
+<dialog id="detail" aria-labelledby="d-title"></dialog>
+
+<script>
+const DATA = /*CATALOG*/null;
+
+const T = {
+  es: {
+    title: "Plantillas de Aether Panel",
+    searchLabel: "Buscar una plantilla",
+    placeholder: "¿Qué quieres alojar?",
+    lead: (n) => `${n} plantillas para crear servidores con un clic en cualquier panel Aether: juegos, bots, bases de datos y servicios. Cada panel las encuentra en Plantillas → Comunidad.`,
+    kinds: {all: "Todas", game: "Juegos", bot: "Bots de Discord", language: "Lenguajes", database: "Bases de datos", service: "Servicios"},
+    kind1: {game: "Juego", bot: "Bot de Discord", language: "Lenguaje", database: "Base de datos", service: "Servicio"},
+    memory: "Memoria", disk: "Disco", port: "Puerto", cpu: "CPU", runs: "Funciona en",
+    host: "el nodo", docker: "Docker",
+    noResults: (q) => `Ninguna plantilla coincide con «${q}». Prueba con otro nombre o con el tipo, como «minecraft», «bot» o «base de datos».`,
+    settingsTitle: "Lo que puedes ajustar",
+    settingsText: "Valores por defecto al crear el servidor.",
+    noSettings: "Esta plantilla no tiene más ajustes que la memoria, el disco y la CPU.",
+    options: "Opciones",
+    readme: "Léeme y código", json: "Archivo de la plantilla",
+    close: "Cerrar",
+    useTitle: "¿Tu panel no las muestra?",
+    useText: "Los paneles instalados con Docker ya traen esta dirección. Si el tuyo no las ve, ponla en su configuración y aparecerán en unos minutos.",
+    copy: "Copiar", copied: "Copiada",
+    useHint: "Variable <code>SKYPANEL_TEMPLATES_URL</code> o ajuste <code>templates.url</code>.",
+    footer: "Cada plantilla pasa una revisión de seguridad antes de publicarse.",
+    repo: "Ver el repositorio",
+    linux: "Linux", windows: "Windows",
+  },
+  en: {
+    title: "Aether Panel templates",
+    searchLabel: "Search for a template",
+    placeholder: "What do you want to host?",
+    lead: (n) => `${n} templates to create servers in one click on any Aether panel: games, bots, databases and services. Every panel lists them under Templates → Community.`,
+    kinds: {all: "All", game: "Games", bot: "Discord bots", language: "Languages", database: "Databases", service: "Services"},
+    kind1: {game: "Game", bot: "Discord bot", language: "Language", database: "Database", service: "Service"},
+    memory: "Memory", disk: "Disk", port: "Port", cpu: "CPU", runs: "Runs on",
+    host: "the node", docker: "Docker",
+    noResults: (q) => `No template matches “${q}”. Try another name or a kind, such as “minecraft”, “bot” or “database”.`,
+    settingsTitle: "What you can change",
+    settingsText: "Default values when the server is created.",
+    noSettings: "This template has no settings besides memory, disk and CPU.",
+    options: "Options",
+    readme: "Readme and source", json: "Template file",
+    close: "Close",
+    useTitle: "Your panel doesn't show them?",
+    useText: "Panels installed with Docker already have this address. If yours doesn't list them, add it to its configuration and they show up within minutes.",
+    copy: "Copy", copied: "Copied",
+    useHint: "Variable <code>SKYPANEL_TEMPLATES_URL</code> or setting <code>templates.url</code>.",
+    footer: "Every template passes a security check before it is published.",
+    repo: "See the repository",
+    linux: "Linux", windows: "Windows",
+  },
+};
+
+const ORDER = ["all", "game", "bot", "language", "database", "service"];
+const SYN = {
+  game: "juego game servidor server", bot: "bot discord", language: "lenguaje language runtime",
+  database: "base de datos database db sql", service: "servicio service",
+};
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fold = (s) => String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+const store = {get(k){try{return localStorage.getItem(k)}catch{return null}}, set(k,v){try{localStorage.setItem(k,v)}catch{}}};
+
+const saved = store.get("lang");
+let lang = saved === "es" || saved === "en" ? saved : (navigator.language || "es").toLowerCase().startsWith("en") ? "en" : "es";
+let kind = "all";
+const items = DATA ? DATA.templates : [];
+items.forEach((t) => { t.hay = fold([t.name, t.id, SYN[t.kind], T.es.kind1[t.kind], T.en.kind1[t.kind]].join(" ")); });
+
+const mb = (v) => v == null ? "—" : v >= 1024 ? `${+(v / 1024).toFixed(1)} GB` : `${v} MB`;
+const logo = (t, cls = "") => t.logo
+  ? `<span class="logo ${t.plate ? "plate" : ""} ${cls}"><img src="icons/${esc(t.logo)}" alt="" loading="lazy" width="44" height="44"></span>`
+  : `<span class="logo ${cls}"><b>${esc(t.name[0])}</b></span>`;
+const envText = (t, L) => t.envs.map((e) => L[e] || e).join(lang === "es" ? " o " : " or ");
+
+function renderStatic() {
+  const L = T[lang];
+  document.documentElement.lang = lang;
+  document.title = L.title;
+  document.querySelectorAll("[data-t]").forEach((el) => {
+    const v = L[el.dataset.t];
+    if (typeof v === "function") el.textContent = v(items.length);
+    else if (el.dataset.t === "useHint") el.innerHTML = v;
+    else el.textContent = v;
+  });
+  $("#q").placeholder = L.placeholder;
+  $("#repo").href = DATA ? DATA.repo : "#";
+  document.querySelectorAll(".lang button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.lang === lang));
+  const counts = {all: items.length};
+  items.forEach((t) => counts[t.kind] = (counts[t.kind] || 0) + 1);
+  $("#kinds").innerHTML = ORDER.filter((k) => counts[k]).map((k) =>
+    `<li><button type="button" data-kind="${k}" aria-pressed="${k === kind}">${esc(L.kinds[k])}<span>${counts[k]}</span></button></li>`).join("");
+}
+
+function renderList() {
+  const L = T[lang];
+  const words = fold($("#q").value.trim()).split(/\s+/).filter(Boolean);
+  const shown = items.filter((t) => (kind === "all" || t.kind === kind) && words.every((w) => t.hay.includes(w)));
+  if (!shown.length) {
+    $("#list").innerHTML = `<li class="empty">${esc(L.noResults($("#q").value.trim()))}</li>`;
+    return;
+  }
+  $("#list").innerHTML = shown.map((t) => `<li class="row"><button type="button" data-id="${esc(t.id)}">
+    ${logo(t)}
+    <span><span class="name">${esc(t.name)}</span><span class="sub" style="display:block">${esc(L.kind1[t.kind])}, ${esc(L.runs.toLowerCase())} ${esc(envText(t, L))}</span></span>
+    <dl class="specs"><div><dt>${L.memory}</dt><dd>${mb(t.memory)}</dd></div><div><dt>${L.disk}</dt><dd>${mb(t.disk)}</dd></div><div><dt>${L.port}</dt><dd>${t.port ?? "—"}</dd></div></dl>
+  </button></li>`).join("");
+}
+
+function openDetail(id, push = true) {
+  const t = items.find((x) => x.id === id);
+  if (!t) return;
+  const L = T[lang];
+  const facts = [[L.memory, mb(t.memory)], [L.disk, mb(t.disk)], [L.cpu, t.cpu == null ? "—" : `${t.cpu} %`], [L.port, t.port ?? "—"]];
+  const sys = [t.os && (L[t.os] || t.os), t.arch].filter(Boolean).join(" ");
+  facts.push([L.runs, envText(t, L) + (sys ? ` (${sys})` : "")]);
+  const settings = t.settings.length ? `<ul class="settings">${t.settings.map((s) => `<li>
+      <span class="s-name">${esc(s.name)}</span>${s.value !== null && s.value !== "" ? `<span class="s-val">${esc(s.value)}</span>` : ""}
+      ${s.desc ? `<div class="s-desc">${esc(s.desc)}</div>` : ""}
+      ${s.options.length ? `<div class="s-desc">${L.options}: ${s.options.map(esc).join(", ")}</div>` : ""}
+    </li>`).join("")}</ul>` : `<p class="s-desc">${L.noSettings}</p>`;
+  const d = $("#detail");
+  d.innerHTML = `<div class="d-head">${logo(t)}<div><h2 id="d-title">${esc(t.name)}</h2><div class="sub">${esc(L.kind1[t.kind])}</div></div>
+      <button class="close" type="button" aria-label="${L.close}" data-close>×</button></div>
+    <div class="d-body">
+      <dl class="facts">${facts.map(([k, v], i) => `<div${i === facts.length - 1 ? ' class="wide"' : ""}><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
+      <h3>${L.settingsTitle}</h3>${t.settings.length ? `<p>${L.settingsText}</p>` : ""}${settings}
+      <div class="links"><a class="main" href="${esc(t.source)}" target="_blank" rel="noopener">${L.readme}</a><a href="${esc(t.json)}" target="_blank" rel="noopener">${L.json}</a></div>
+    </div>`;
+  if (!d.open) d.showModal();
+  if (push && location.hash !== `#${t.id}`) history.pushState(null, "", `#${t.id}`);
+}
+
+$("#detail").addEventListener("click", (e) => {
+  if (e.target.closest("[data-close]") || e.target === e.currentTarget) $("#detail").close();
+});
+$("#detail").addEventListener("close", () => { if (location.hash) history.pushState(null, "", location.pathname + location.search); });
+window.addEventListener("popstate", () => {
+  const id = location.hash.slice(1);
+  if (id) openDetail(id, false); else if ($("#detail").open) $("#detail").close();
+});
+$("#list").addEventListener("click", (e) => { const b = e.target.closest("[data-id]"); if (b) openDetail(b.dataset.id); });
+$("#kinds").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-kind]"); if (!b) return;
+  kind = b.dataset.kind;
+  document.querySelectorAll("#kinds button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+  renderList();
+});
+$("#q").addEventListener("input", renderList);
+document.querySelector(".lang").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-lang]"); if (!b) return;
+  lang = b.dataset.lang; store.set("lang", lang);
+  renderStatic(); renderList();
+  if ($("#detail").open && location.hash) openDetail(location.hash.slice(1), false);
+});
+$("#copy").addEventListener("click", async () => {
+  const L = T[lang];
+  try { await navigator.clipboard.writeText($("#url").textContent); }
+  catch { const r = document.createRange(); r.selectNodeContents($("#url")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return; }
+  $("#copy").textContent = L.copied;
+  setTimeout(() => { $("#copy").textContent = T[lang].copy; }, 1600);
+});
+
+renderStatic();
+renderList();
+if (location.hash) openDetail(location.hash.slice(1), false);
+</script>
+</body>
+</html>
