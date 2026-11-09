@@ -1,6 +1,6 @@
 #!/bin/sh
 # Cloudflare Pages runs this on every push: it checks the templates and copies what the panels
-# download (templates.json and each template's folder) to public/. A template that fails the
+# download (templates.json and each template's folder) and the catalogue page to public/. A template that fails the
 # check stops the publish, and the site keeps the previous version.
 set -eu
 cd "$(dirname "$0")/.."
@@ -15,4 +15,6 @@ for dir in */; do
     cp -R "$name" public/
   fi
 done
+# the catalogue page at the root of the site (site/index.html with the templates inlined)
+python3 tools/build_site.py public
 echo "public/: $(ls public | wc -l | tr -d ' ') entries"

@@ -51,6 +51,14 @@ templates.aetherpanel.es is served by Cloudflare Pages (project `aether-template
   `public/` (`tools/build.sh`) and publishes it with Wrangler. A failed check publishes nothing; the
   site keeps the previous version.
 
+## Catalogue page
+
+The root of templates.aetherpanel.es is a catalogue of the templates, for people choosing what to
+host: search, kinds, default resources and the settings of each one. `tools/build_site.py` builds
+it from `site/index.html` with the templates inlined, plus the logos in `site/icons` (the same files
+and keys as the panel's `template-logos.ts`; a new logo goes in both). Preview it locally with
+`sh tools/build.sh && python3 -m http.server -d public`.
+
 ## Security check
 
 Everything a template runs or downloads (install, uninstall, pre and post steps, start and stop
